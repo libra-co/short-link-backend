@@ -1,17 +1,17 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-console.log('__dirname', __dirname);
+console.log('__dirname', __dirname + '../src');
 export const database_dev: TypeOrmModuleOptions = {
   type: 'mysql',
   host: 'localhost',
-  port: 3307,
+  port: 3306,
   username: 'root',
-  password: '123456789',
+  password: 'root',
   logging: true,
   synchronize: true,
   database: 'short-url',
   poolSize: 10,
   connectorPackage: 'mysql2',
-  entities: [__dirname + '../src/**/*.entity{.ts,.js}'],
+  entities: [__dirname + '/../src/**/*.entity{.ts,.js}'],
 };
 
 export const database_pro: TypeOrmModuleOptions = {
@@ -23,7 +23,7 @@ export const database_pro: TypeOrmModuleOptions = {
   database: 'short-url',
   poolSize: 10,
   connectorPackage: 'mysql2',
-  entities: [__dirname + '/**/*.entity{.ts,.js}'],
+  entities: [__dirname + '/../src/**/*.entity{.ts,.js}'],
   extra: {
     authPlugin: 'sha256_password', // for mysql 8.0
   },
