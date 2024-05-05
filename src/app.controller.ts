@@ -1,19 +1,7 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Headers,
-  Inject,
-  InternalServerErrorException,
-  Param,
-  Post,
-  Query,
-  Req,
-} from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ShortCodeService } from './short-link/short-link.service';
 import { ShortLinkMapService } from './short-link-map/short-link-map.service';
-import { Request } from 'express';
 
 @Controller()
 export class AppController {

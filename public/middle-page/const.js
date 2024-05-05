@@ -20,5 +20,3 @@ export const VisitorOsType = {
   ANDROID: 4,
   LINUX: 5,
 };
-
-

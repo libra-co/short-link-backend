@@ -6,6 +6,7 @@ import { SharePrivateStatus, ShortCodeStatus } from './short-link.type';
 import { ShortCode } from './entities/short-link.entity';
 import { GenerateShortLinkDto } from 'src/short-link-map/dtos/generate-short-link.dto';
 import { ShortCodeMap } from 'src/short-link-map/entities/link-map.entity';
+import { ListShortCodeDto } from './dto/short-lin.dto';
 
 @Injectable()
 export class ShortCodeService {
@@ -68,5 +69,35 @@ export class ShortCodeService {
 
   async getShortCodeByCode(shortCode: string) {
     return this.shortCodeRepository.findOneBy({ shortCode });
+  }
+
+  async listShortCode({
+    page,
+    pageSize,
+    shortCode,
+    status,
+    privateShare,
+  }: ListShortCodeDto) {
+    const res = await this.shortCodeRepository.findAndCount({
+      take: pageSize,
+      skip: (page - 1) * pageSize,
+      where: { shortCode, status, privateShare },
+      order: {
+        createTime: 'DESC',
+      },
+      select: [
+        'id',
+        'shortCode',
+        'status',
+        'privateShare',
+        'privateSharePrompt',
+        'privateSharePassword',
+        'visitLimit',
+      ],
+    });
+    return {
+      data: res[0],
+      total: res[1],
+    };
   }
 }

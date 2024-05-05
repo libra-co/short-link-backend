@@ -20,16 +20,14 @@ export class ShortCode {
   shortCode: string;
 
   @Column({
-    type: 'enum',
-    enum: ShortCodeStatus,
+    type: 'int',
     default: ShortCodeStatus.ENABLE,
     comment: '0 - unoccupied, 1 - occupied',
   })
   status: ShortCodeStatus;
 
   @Column({
-    type: 'enum',
-    enum: SharePrivateStatus,
+    type: 'int',
     default: SharePrivateStatus.PUBLIC,
     comment:
       '0 - public, 1 - private, default is public.If it is private, you need set password to access the link.',
@@ -53,7 +51,7 @@ export class ShortCode {
   @Column({
     default: -1,
     comment:
-      'visit limitation,If it is -1, it means no limitation, when it is greater than 0, it means the limitation of visit times',
+      'visit limitation,if it is -1, it means no limitation, when it is greater than 0, it means the limitation of visit times',
   })
   visitLimit: number;
 
