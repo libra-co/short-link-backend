@@ -26,26 +26,28 @@ export class VisitRecord {
   visitTime: Date;
 
   @Column({
-    type: 'enum',
-    enum: VisitType,
+    type: 'int',
+    comment: '0 - first visit, 1 - repeat visit',
   })
   visitType: VisitType;
 
   @Column({
-    type: 'enum',
-    enum: VisitorDeviceType,
+    type: 'int',
+    comment: '0 - PC, 1 - mobile',
   })
   visitorDeviceType: VisitorDeviceType;
 
   @Column({
-    type: 'enum',
-    enum: VisitorBrowserType,
+    type: 'int',
+    comment:
+      '0 - unknown, 1 - chrome, 2 - firefox, 3 - safari, 4 - edge, 5 - ie',
   })
   visitorBrowserType: VisitorBrowserType;
 
   @Column({
-    type: 'enum',
-    enum: VisitorOsType,
+    type: 'int',
+    comment:
+      '0 - unknown, 1 - windows, 2 - mac, 3 - ios, 4 - android, 5 - linux',
   })
   visitorOsType: VisitorOsType;
 
