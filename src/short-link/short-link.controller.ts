@@ -4,7 +4,7 @@ import { ShortCodeService } from './short-link.service';
 import { ShortLinkMapService } from 'src/short-link-map/short-link-map.service';
 import { GenerateShortLinkDto } from 'src/short-link-map/dtos/generate-short-link.dto';
 import { ListShortCodeDto } from './dto/short-lin.dto';
-import { ShortCodeStatus } from './short-link.type';
+import { SharePrivateStatus, ShortCodeStatus } from './short-link.type';
 
 @Controller('short-code')
 export class ShortCodeController {
@@ -28,7 +28,7 @@ export class ShortCodeController {
       shortCode: shortCode,
       status: status ? (+status as ShortCodeStatus) : undefined,
       privateShare: privateShare
-        ? (+privateShare as ShortCodeStatus)
+        ? (+privateShare as SharePrivateStatus)
         : undefined,
     };
     return await this.shortCodeService.listShortCode(query);
