@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { database_dev } from '../config/database.config';
+import { database_dev, database_pro } from '../config/database.config';
 import { ShortCodeModule } from './short-link/short-link.module';
 import { ShortLinkMapModule } from './short-link-map/short-link-map.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -19,7 +19,8 @@ import { VisitRecordModule } from './visit-record/visit-record.module';
         () => database_dev, // database configuration
       ],
     }),
-    TypeOrmModule.forRoot(database_dev),
+    // TypeOrmModule.forRoot(database_dev),
+    TypeOrmModule.forRoot(database_pro),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public/middle-page'),
       exclude: ['/api/(.*)', '/direct/(.*)'],
@@ -31,4 +32,4 @@ import { VisitRecordModule } from './visit-record/visit-record.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

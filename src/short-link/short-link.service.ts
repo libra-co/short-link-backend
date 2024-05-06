@@ -6,7 +6,7 @@ import { SharePrivateStatus, ShortCodeStatus } from './short-link.type';
 import { ShortCode } from './entities/short-link.entity';
 import { GenerateShortLinkDto } from 'src/short-link-map/dtos/generate-short-link.dto';
 import { ShortCodeMap } from 'src/short-link-map/entities/link-map.entity';
-import { ListShortCodeDto } from './dto/short-lin.dto';
+import { ChangeStatusDto, ListShortCodeDto } from './dto/short-lin.dto';
 
 @Injectable()
 export class ShortCodeService {
@@ -96,8 +96,38 @@ export class ShortCodeService {
       ],
     });
     return {
-      data: res[0],
-      total: res[1],
+      data: {
+        data: res[0],
+        total: res[1],
+      },
+      code: HttpStatus.OK,
+      message: 'Short code list fetched successfully',
+    };
+  }
+
+  async changeStatus({ id, shortCode, status }: ChangeStatusDto) {
+    // Check if the id or short code both not provided
+    if (!id && !shortCode) {
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        message: 'Id or short code is required',
+      };
+    }
+    // If the id is not provided, then find the short code by the short code
+    const shortCodeEntity = await this.shortCodeRepository.findOne({
+      where: { shortCode, id },
+    });
+    if (!shortCodeEntity) {
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Short code not found',
+      };
+    }
+    shortCodeEntity.status = status;
+    await this.shortCodeRepository.save(shortCodeEntity);
+    return {
+      code: HttpStatus.OK,
+      message: 'Short code status updated successfully',
     };
   }
 }

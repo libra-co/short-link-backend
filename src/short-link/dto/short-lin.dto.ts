@@ -10,4 +10,5 @@ export interface ListShortCodeDto extends PaginationDto {
 export interface ChangeStatusDto {
   id?: number;
   shortCode?: string;
+  status: ShortCodeStatus;
 }

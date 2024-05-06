@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateVisitRecordParams } from './visit-record.type';
 import { VisitRecord } from './entities/link-record.entity';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { EntityManager } from 'typeorm';
+import { Code, EntityManager } from 'typeorm';
 import { ShortCodeStatus, VisitType } from 'src/short-link/short-link.type';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
@@ -14,7 +14,7 @@ export class VisitRecordService {
     private readonly httpService: HttpService,
     @InjectEntityManager()
     private readonly entityManager: EntityManager,
-  ) { }
+  ) {}
 
   async genVisitRecord(createVisitRecordDto: CreateVisitRecordParams) {
     const {
@@ -118,5 +118,35 @@ export class VisitRecordService {
     }
     console.error(data.msg);
     return {};
+  }
+
+  async getShortCodeVisitDetailById(shortCodeId: number) {
+    if (!shortCodeId)
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        message: 'Short code not found',
+      };
+    const [data, total] = await this.entityManager.findAndCount(VisitRecord, {
+      where: { shortCodeId },
+      select: [
+        'id',
+        'ip',
+        'visitTime',
+        'visitType',
+        'visitorDeviceType',
+        'visitorBrowserType',
+        'visitorOsType',
+        'referer',
+        'country',
+        'province',
+        'city',
+        'isp',
+      ],
+    });
+    return {
+      data: { data, total },
+      message: 'Visit detail fetched successfully',
+      code: HttpStatus.OK,
+    };
   }
 }

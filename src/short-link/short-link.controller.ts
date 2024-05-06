@@ -12,7 +12,7 @@ export class ShortCodeController {
     private readonly shortCodeService: ShortCodeService,
     @Inject(ShortLinkMapService)
     private readonly shortLinkMapService: ShortLinkMapService,
-  ) { }
+  ) {}
 
   @Get('list')
   async listShortCode(
@@ -34,11 +34,10 @@ export class ShortCodeController {
     return await this.shortCodeService.listShortCode(query);
   }
 
-  @Post('changeStatus')
-  async changeStatus(@Body() changeStatusDto: ChangeStatusDto) { }
-
-  @Get('visitDetail')
-  async visitDetail(@Query('id') id: string) { }
+  @Post('change-status')
+  async changeStatus(@Body() changeStatusDto: ChangeStatusDto) {
+    return await this.shortCodeService.changeStatus(changeStatusDto);
+  }
 
   @Get()
   async genShortLink(@Query('url') url: string) {
