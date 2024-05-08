@@ -29,3 +29,18 @@ export const database_pro: TypeOrmModuleOptions = {
     // authPlugin: 'sha256_password', // for mysql 8.0
   },
 };
+export const database_server: TypeOrmModuleOptions = {
+  type: 'mysql',
+  host: 'localhost',
+  port: 3307,
+  username: 'short_link',
+  password: '8H6SSnGd4NRGMSks',
+  database: 'short-url',
+  poolSize: 10,
+  connectorPackage: 'mysql2',
+  synchronize: true,
+  entities: [__dirname + '/../src/**/*.entity{.ts,.js}'],
+  extra: {
+    // authPlugin: 'sha256_password', // for mysql 8.0
+  },
+};
