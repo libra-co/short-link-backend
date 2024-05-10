@@ -49,8 +49,7 @@ export class ShortCodeService {
     try {
       await this.entityManager.transaction(
         async (transactionalEntityManager) => {
-          const { id: shortCodeId } =
-            await transactionalEntityManager.save(shortCode);
+          const { id: shortCodeId } = await transactionalEntityManager.save(shortCode);
           linkMap.shortCodeId = shortCodeId;
           await transactionalEntityManager.save(linkMap);
         },
@@ -63,6 +62,9 @@ export class ShortCodeService {
     }
     return {
       code: HttpStatus.OK,
+      data:{
+        shortCode: shortCode.shortCode,
+      },
       message: 'Short link saved successfully',
     };
   }
@@ -127,6 +129,9 @@ export class ShortCodeService {
     await this.shortCodeRepository.save(shortCodeEntity);
     return {
       code: HttpStatus.OK,
+      data: {
+        shortCode: shortCodeEntity.shortCode,
+      },
       message: 'Short code status updated successfully',
     };
   }

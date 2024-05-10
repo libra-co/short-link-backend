@@ -32,10 +32,10 @@ export const database_pro: TypeOrmModuleOptions = {
 export const database_server: TypeOrmModuleOptions = {
   type: 'mysql',
   host: 'localhost',
-  port: 3307,
+  port: 3306,
   username: 'short_link',
   password: '8H6SSnGd4NRGMSks',
-  database: 'short-url',
+  database: 'short_link',
   poolSize: 10,
   connectorPackage: 'mysql2',
   synchronize: true,

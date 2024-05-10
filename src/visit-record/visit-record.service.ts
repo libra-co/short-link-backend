@@ -14,7 +14,7 @@ export class VisitRecordService {
     private readonly httpService: HttpService,
     @InjectEntityManager()
     private readonly entityManager: EntityManager,
-  ) {}
+  ) { }
 
   async genVisitRecord(createVisitRecordDto: CreateVisitRecordParams) {
     const {
@@ -52,7 +52,6 @@ export class VisitRecordService {
       id: visitRecord.shortCodeId,
       status: ShortCodeStatus.ENABLE,
     });
-
     if (!shortCode) return null;
 
     if (shortCode.visitLimit > 0) {

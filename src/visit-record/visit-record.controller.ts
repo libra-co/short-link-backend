@@ -22,7 +22,7 @@ export class VisitRecordController {
     private readonly shortCodeService: ShortCodeService,
     @Inject(ShortLinkMapService)
     private readonly shortLinkMapService: ShortLinkMapService,
-  ) {}
+  ) { }
 
   @Post('record/:shortCode')
   async create(
@@ -53,6 +53,7 @@ export class VisitRecordController {
       ip,
       shortCodeId: shortCodeEntity.id,
     });
+
     await this.visitRecordService.createVisitRecord(visitRecord);
 
     return {

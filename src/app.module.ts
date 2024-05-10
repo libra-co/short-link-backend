@@ -20,8 +20,8 @@ import { VisitRecordModule } from './visit-record/visit-record.module';
       ],
     }),
     // TypeOrmModule.forRoot(database_dev),
-    // TypeOrmModule.forRoot(database_pro),
-    TypeOrmModule.forRoot(database_server),
+    TypeOrmModule.forRoot(database_pro),
+    // TypeOrmModule.forRoot(database_server),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public/middle-page'),
       exclude: ['/api/(.*)', '/direct/(.*)'],
