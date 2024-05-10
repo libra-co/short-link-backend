@@ -17,7 +17,7 @@ export class VisitRecord {
   id: number;
 
   @Column({
-    length: 15,
+    length: 128,
     comment: 'visitor ip address',
   })
   ip: string;

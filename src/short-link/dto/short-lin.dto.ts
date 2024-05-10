@@ -6,3 +6,9 @@ export interface ListShortCodeDto extends PaginationDto {
   status?: ShortCodeStatus;
   privateShare?: SharePrivateStatus;
 }
+
+export interface ChangeStatusDto {
+  id?: number;
+  shortCode?: string;
+  status: ShortCodeStatus;
+}

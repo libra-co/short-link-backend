@@ -7,6 +7,7 @@ import {
   Ip,
   Inject,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { VisitRecordService } from './visit-record.service';
 import { CreateVisitRecordDto } from './dto/visit-record.dto';
@@ -52,12 +53,18 @@ export class VisitRecordController {
       ip,
       shortCodeId: shortCodeEntity.id,
     });
+
     await this.visitRecordService.createVisitRecord(visitRecord);
 
     return {
       url: shortLinkMapEntity.originalUrl,
       code: HttpStatus.PERMANENT_REDIRECT,
     };
+  }
+
+  @Get('detail')
+  async getShortCodeVisitDetailById(@Query('id') id: string) {
+    return this.visitRecordService.getShortCodeVisitDetailById(+id);
   }
 
   @Get('ip/:ip')
