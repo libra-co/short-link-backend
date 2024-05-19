@@ -8,6 +8,7 @@ import {
   Inject,
   HttpStatus,
   Query,
+  Headers,
 } from '@nestjs/common';
 import { VisitRecordService } from './visit-record.service';
 import { CreateVisitRecordDto } from './dto/visit-record.dto';
@@ -29,6 +30,7 @@ export class VisitRecordController {
     @Param('shortCode') shortCode: string,
     @Body() createVisitRecordDto: CreateVisitRecordDto,
     @Ip() ip: string,
+    @Headers('X-Forwarded-For') xForwardedFor: string, // Set Header X-Forwarded-For to get real IP If u use Nginx
   ) {
     const shortCodeEntity =
       await this.shortCodeService.getShortCodeByCode(shortCode);
@@ -50,7 +52,7 @@ export class VisitRecordController {
 
     const visitRecord = await this.visitRecordService.genVisitRecord({
       ...createVisitRecordDto,
-      ip,
+      ip: xForwardedFor || ip,
       shortCodeId: shortCodeEntity.id,
     });
 
