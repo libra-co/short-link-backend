@@ -1,5 +1,5 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-console.log('__dirname', __dirname + '../src');
+
 export const database_dev: TypeOrmModuleOptions = {
   type: 'mysql',
   host: 'localhost',

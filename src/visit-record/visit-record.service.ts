@@ -104,18 +104,12 @@ export class VisitRecordService {
           throw new Error('Failed to get ip location');
         }),
       ),
-    )) as {
-      code: HttpStatus;
-      msg: string;
-      data: {
-        address: null | string;
-      };
-    };
-    if (data.code === 200) {
-      const [country, province, city, isp] = data.data.address.split(' ');
+    ));
+    if (data.status === 200) {
+      const [country, province, city, isp] = data.data.data.address.split(' ');
       return { country, province, city, isp };
     }
-    console.error(data.msg);
+    console.error(data.data.msg);
     return {};
   }
 
