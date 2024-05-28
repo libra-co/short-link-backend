@@ -1,12 +1,13 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { CreateVisitRecordParams } from './visit-record.type';
+import { CreateVisitRecordParams, UrlAccessStatusEnum } from './visit-record.type';
 import { VisitRecord } from './entities/link-record.entity';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { Code, EntityManager } from 'typeorm';
+import { Code, EntityManager, ReturningStatementNotSupportedError } from 'typeorm';
 import { ShortCodeStatus, VisitType } from 'src/short-link/short-link.type';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { ShortCode } from 'src/short-link/entities/short-link.entity';
+import { MessageService } from 'src/message/message.service';
 
 @Injectable()
 export class VisitRecordService {
@@ -47,7 +48,7 @@ export class VisitRecordService {
     return visitRecord;
   }
 
-  async createVisitRecord(visitRecord: VisitRecord) {
+  async createVisitRecord(visitRecord: VisitRecord): Promise<VisitRecord | null> {
     const shortCode = await this.entityManager.findOneBy(ShortCode, {
       id: visitRecord.shortCodeId,
       status: ShortCodeStatus.ENABLE,
@@ -62,25 +63,20 @@ export class VisitRecordService {
     }
 
     try {
-      await this.entityManager.transaction(
+      const recordEntity = await this.entityManager.transaction(
         async (transactionalEntityManager) => {
-          await transactionalEntityManager.save(visitRecord);
+          const recordEntity = await transactionalEntityManager.save(visitRecord);
           if (shortCode.visitLimit > 0) {
             await transactionalEntityManager.save(shortCode);
           }
+          return recordEntity;
         },
       );
+      return recordEntity;
     } catch (error) {
       console.error(this.createVisitRecord.name, 'error', error);
-      return {
-        code: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Failed to save visit record',
-      };
+      return null;
     }
-    return {
-      code: HttpStatus.TEMPORARY_REDIRECT,
-      message: 'Visit record saved successfully',
-    };
   }
 
   findAll() {
@@ -106,8 +102,11 @@ export class VisitRecordService {
       ),
     ));
     if (data.status === 200) {
-      const [country, province, city, isp] = data.data.data.address.split(' ');
-      return { country, province, city, isp };
+      const address = data?.data?.data?.address;
+      if (address) {
+        const [country, province, city, isp] = address.split(' ');
+        return { country, province, city, isp };
+      };
     }
     console.error(data.data.msg);
     return {};
@@ -141,5 +140,12 @@ export class VisitRecordService {
       message: 'Visit detail fetched successfully',
       code: HttpStatus.OK,
     };
+  }
+
+  async updateFailedAccessRecord(id: number) {
+    const record = await this.entityManager.findOneBy(VisitRecord, { id });
+    if (!record) return null;
+    record.accessFailed = UrlAccessStatusEnum.FAIL;
+    return await this.entityManager.save(record);
   }
 }

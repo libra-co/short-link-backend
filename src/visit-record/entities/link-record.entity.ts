@@ -10,6 +10,7 @@ import {
   VisitorDeviceType,
   VisitorOsType,
 } from '../../short-link/short-link.type';
+import { UrlAccessStatusEnum } from '../visit-record.type';
 
 @Entity()
 export class VisitRecord {
@@ -93,4 +94,11 @@ export class VisitRecord {
     nullable: true,
   })
   isp?: string;
+
+  @Column({
+    type: 'int',
+    default: 0,
+    comment: 'url access, 0 - success, 1 - failed',
+  })
+  accessFailed: UrlAccessStatusEnum;
 }

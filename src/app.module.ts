@@ -9,6 +9,7 @@ import { ShortLinkMapModule } from './short-link-map/short-link-map.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { VisitRecordModule } from './visit-record/visit-record.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
@@ -20,8 +21,8 @@ import { VisitRecordModule } from './visit-record/visit-record.module';
       ],
     }),
     // TypeOrmModule.forRoot(database_dev),
-    // TypeOrmModule.forRoot(database_pro),
-    TypeOrmModule.forRoot(database_server),
+    TypeOrmModule.forRoot(database_pro),
+    // TypeOrmModule.forRoot(database_server),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public/middle-page'),
       exclude: ['/api/(.*)', '/direct/(.*)'],
@@ -29,6 +30,7 @@ import { VisitRecordModule } from './visit-record/visit-record.module';
     ShortCodeModule,
     ShortLinkMapModule,
     VisitRecordModule,
+    MessageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
