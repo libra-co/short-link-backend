@@ -2,12 +2,11 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateVisitRecordParams, UrlAccessStatusEnum } from './visit-record.type';
 import { VisitRecord } from './entities/link-record.entity';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { Code, EntityManager, ReturningStatementNotSupportedError } from 'typeorm';
+import {  EntityManager,  } from 'typeorm';
 import { ShortCodeStatus, VisitType } from 'src/short-link/short-link.type';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { ShortCode } from 'src/short-link/entities/short-link.entity';
-import { MessageService } from 'src/message/message.service';
 
 @Injectable()
 export class VisitRecordService {
