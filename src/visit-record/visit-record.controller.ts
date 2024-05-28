@@ -8,11 +8,17 @@ import {
   Inject,
   HttpStatus,
   Query,
+  Headers,
 } from '@nestjs/common';
 import { VisitRecordService } from './visit-record.service';
 import { CreateVisitRecordDto } from './dto/visit-record.dto';
 import { ShortCodeService } from 'src/short-link/short-link.service';
 import { ShortLinkMapService } from 'src/short-link-map/short-link-map.service';
+import { decryptVisitRecordId, encryptVisitRecordId } from 'src/utils/crypto';
+import { VisitRecordCryptoSecretKeyIv } from 'config/crypto.config';
+import { MessageService } from 'src/message/message.service';
+import { MessageTypeEnum } from 'src/message/message.type';
+import { messageContentTemplate } from 'src/message/utils';
 
 @Controller('visit-record')
 export class VisitRecordController {
@@ -22,6 +28,8 @@ export class VisitRecordController {
     private readonly shortCodeService: ShortCodeService,
     @Inject(ShortLinkMapService)
     private readonly shortLinkMapService: ShortLinkMapService,
+    @Inject(MessageService)
+    private readonly messageService: MessageService,
   ) { }
 
   @Post('record/:shortCode')
@@ -29,6 +37,7 @@ export class VisitRecordController {
     @Param('shortCode') shortCode: string,
     @Body() createVisitRecordDto: CreateVisitRecordDto,
     @Ip() ip: string,
+    @Headers('X-Forwarded-For') xForwardedFor: string, // Set Header X-Forwarded-For to get real IP If u use Nginx
   ) {
     const shortCodeEntity =
       await this.shortCodeService.getShortCodeByCode(shortCode);
@@ -50,15 +59,54 @@ export class VisitRecordController {
 
     const visitRecord = await this.visitRecordService.genVisitRecord({
       ...createVisitRecordDto,
-      ip,
+      ip: xForwardedFor || ip,
       shortCodeId: shortCodeEntity.id,
     });
 
-    await this.visitRecordService.createVisitRecord(visitRecord);
-
+    const recordEntity = await this.visitRecordService.createVisitRecord(visitRecord);
+    let recordId = encryptVisitRecordId(recordEntity.id);
     return {
-      url: shortLinkMapEntity.originalUrl,
+      data: {
+        url: shortLinkMapEntity.originalUrl,
+        recordId: recordId,
+      },
       code: HttpStatus.PERMANENT_REDIRECT,
+    };
+  }
+
+  @Get('access-failed/:recordId')
+  async updateAccessStatus(@Param('recordId') recordId: string) {
+    const id = decryptVisitRecordId(recordId);
+    console.log('id', id);
+    if (!id) return {
+      code: HttpStatus.BAD_REQUEST,
+      message: 'Invalid record id',
+    };
+    const visitRecordEntity = await this.visitRecordService.updateFailedAccessRecord(id);
+
+    if (!visitRecordEntity) return {
+      code: HttpStatus.BAD_REQUEST,
+      message: 'Record not found',
+    };
+
+    const shortCode = await this.shortCodeService.getShortCodeById(visitRecordEntity.shortCodeId);
+    if (!shortCode) return {
+      code: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Not found short code'
+    };
+
+    const failedMessage = {
+      linkRecordId: visitRecordEntity.id,
+      shortCodeId: visitRecordEntity.shortCodeId,
+      shortCode: shortCode.shortCode,
+      type: MessageTypeEnum.UrlUnavailable,
+      content: messageContentTemplate(MessageTypeEnum.UrlUnavailable, { shortCode: shortCode.shortCode })
+    };
+    const accessFailedMessage = await this.messageService.generateMessage(failedMessage);
+    await this.messageService.createMessage(accessFailedMessage);
+    return {
+      code: HttpStatus.OK,
+      message: 'Access failed record updated successfully',
     };
   }
 

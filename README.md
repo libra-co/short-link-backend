@@ -64,6 +64,14 @@ $ pnpm run test:cov
 pnpm run build
 ```
 
+## setup
+
+set X-Forwarded-For header in nginx,to get the real ip address of the client
+
+```text
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+```
+
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).

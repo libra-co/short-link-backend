@@ -62,7 +62,7 @@ export class ShortCodeService {
     }
     return {
       code: HttpStatus.OK,
-      data:{
+      data: {
         shortCode: shortCode.shortCode,
       },
       message: 'Short link saved successfully',
@@ -134,5 +134,9 @@ export class ShortCodeService {
       },
       message: 'Short code status updated successfully',
     };
+  }
+
+  async getShortCodeById(id: number) {
+    return this.shortCodeRepository.findOneBy({ id });
   }
 }

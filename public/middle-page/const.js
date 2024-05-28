@@ -20,3 +20,8 @@ export const VisitorOsType = {
   ANDROID: 4,
   LINUX: 5,
 };
+
+export const UrlAccessStatusEnum = {
+  Success: 0,
+  Fail: 1,
+}

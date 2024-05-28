@@ -9,6 +9,7 @@ import { ShortLinkMapModule } from './short-link-map/short-link-map.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { VisitRecordModule } from './visit-record/visit-record.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { VisitRecordModule } from './visit-record/visit-record.module';
     ShortCodeModule,
     ShortLinkMapModule,
     VisitRecordModule,
+    MessageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
