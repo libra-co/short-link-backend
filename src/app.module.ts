@@ -11,6 +11,7 @@ import { join } from 'path';
 import { VisitRecordModule } from './visit-record/visit-record.module';
 import { MessageModule } from './message/message.module';
 import { RedisModule } from '@nestjs-modules/ioredis';
+import { VisitDateRecordModule } from './visit-date-record/visit-date-record.module';
 
 @Module({
   imports: [
@@ -21,8 +22,8 @@ import { RedisModule } from '@nestjs-modules/ioredis';
         () => database_dev, // database configuration
       ],
     }),
-    // TypeOrmModule.forRoot(database_dev),
-    TypeOrmModule.forRoot(database_pro),
+    TypeOrmModule.forRoot(database_dev),
+    // TypeOrmModule.forRoot(database_pro),
     // TypeOrmModule.forRoot(database_server),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public/middle-page'),
@@ -33,6 +34,7 @@ import { RedisModule } from '@nestjs-modules/ioredis';
     ShortLinkMapModule,
     VisitRecordModule,
     MessageModule,
+    VisitDateRecordModule,
   ],
   controllers: [AppController],
   providers: [AppService],
