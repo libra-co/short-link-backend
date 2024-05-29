@@ -1,3 +1,4 @@
+import { RedisModuleOptions } from '@nestjs-modules/ioredis';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 export const database_dev: TypeOrmModuleOptions = {
@@ -43,4 +44,9 @@ export const database_server: TypeOrmModuleOptions = {
   extra: {
     // authPlugin: 'sha256_password', // for mysql 8.0
   },
+};
+
+export const redis_dev: RedisModuleOptions = {
+  type: 'single',
+  url:'redis://localhost:6379'
 };

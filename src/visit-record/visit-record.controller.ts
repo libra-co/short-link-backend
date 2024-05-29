@@ -19,6 +19,8 @@ import { VisitRecordCryptoSecretKeyIv } from 'config/crypto.config';
 import { MessageService } from 'src/message/message.service';
 import { MessageTypeEnum } from 'src/message/message.type';
 import { messageContentTemplate } from 'src/message/utils';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import Redis from 'ioredis';
 
 @Controller('visit-record')
 export class VisitRecordController {
@@ -30,6 +32,8 @@ export class VisitRecordController {
     private readonly shortLinkMapService: ShortLinkMapService,
     @Inject(MessageService)
     private readonly messageService: MessageService,
+    @InjectRedis()
+    private readonly redis: Redis
   ) { }
 
   @Post('record/:shortCode')
