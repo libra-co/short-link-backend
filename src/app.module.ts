@@ -22,8 +22,8 @@ import { VisitDateRecordModule } from './visit-date-record/visit-date-record.mod
         () => database_dev, // database configuration
       ],
     }),
-    TypeOrmModule.forRoot(database_dev),
-    // TypeOrmModule.forRoot(database_pro),
+    // TypeOrmModule.forRoot(database_dev),
+    TypeOrmModule.forRoot(database_pro),
     // TypeOrmModule.forRoot(database_server),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public/middle-page'),

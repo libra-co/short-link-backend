@@ -21,3 +21,5 @@ visit number of shortLink in the last 24 hours, 7 days, 30 days should be stored
 
 - [ ] storage the visit count data to redis, which should be stored in the format of `shortLink:visitCount` and could be range by `shortLink:*`
 - [ ] async write the visit data to database in regular time (e.g. 2:00 AM)
+- [ ] remove redis data(month,year,date) in regular ,and async data to mysql 
+- [ ] 

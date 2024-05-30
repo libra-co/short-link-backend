@@ -15,19 +15,16 @@ export class VisitDateRecord {
   shortCode: string;
   @Column({
     length: 255,
-    default: "[0,0,0,0,0,0,0]",
     comment: 'record recent week visit record,unit: date, default is Array in json, [Mon, Tues, Wed, Thur, Tir, Sat, Sun]'
   })
   week: string;
   @Column({
     length: 255,
-    default: "[0,0,0,0,0,0,0]",
     comment: 'record recent week visit record,unit: week, default is Array in json'
   })
   month: string;
   @Column({
     length: 255,
-    default: "[0,0,0,0,0,0,0]",
     comment: 'record recent week visit record,unit: month, default is Array in json'
   })
   year: string;
