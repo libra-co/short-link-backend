@@ -12,6 +12,7 @@ import { VisitRecordModule } from './visit-record/visit-record.module';
 import { MessageModule } from './message/message.module';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { VisitDateRecordModule } from './visit-date-record/visit-date-record.module';
+import { InfluxdbModule } from './influxdb/influxdb.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { VisitDateRecordModule } from './visit-date-record/visit-date-record.mod
     VisitRecordModule,
     MessageModule,
     VisitDateRecordModule,
+    InfluxdbModule,
   ],
   controllers: [AppController],
   providers: [AppService],

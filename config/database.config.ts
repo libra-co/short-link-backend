@@ -48,5 +48,14 @@ export const database_server: TypeOrmModuleOptions = {
 
 export const redis_dev: RedisModuleOptions = {
   type: 'single',
-  url:'redis://localhost:6379'
+  url: 'redis://localhost:6379'
 };
+
+export const influxDB_pro = {
+  url: 'http://localhost:8086',
+  token: "5Gav8xo_WWNQDV7YLBJvUKyA0fou7qkhQcEArjtbwJL0H4JkCOv9Db5T0Fa2xAhofs_IKVmXEM7AerlB6POJbg==",
+  // token: "fSvqSqn-ox6juG4OznFLEem7zMac6MnX8lyP03-0nVdsRMs_4hLkvNCVV-rcNtydDu_Or0uHh-w2DJ1yqNV70A==",  // work through token
+  org: "short_link",
+  bucket: "short_code",
+  visitRecordMeasure: "short_code",
+}

@@ -59,7 +59,7 @@ export class VisitDateRecordService {
     }
   }
 
-  async updateRecordInRedis(shortCodeId: number) {
+  async recordVisitInRedis(shortCodeId: number) {
     const findPipeline = this.redis.pipeline();
     let dayScore, weekScore, monthScore, yearScore;
     findPipeline.zscore(RedisShortVisitRecordDay, shortCodeId, (_, res) => { yearScore = parseInt(res); });

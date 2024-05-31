@@ -8,6 +8,7 @@ import * as dayjs from 'dayjs';
 import { RedisShortVisitRecordDay, RedisShortVisitRecordMonth, RedisShortVisitRecordWeek, RedisShortVisitRecordYear } from './visit-date-record/const';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Redis } from 'ioredis';
+import { InfluxdbService } from './influxdb/influxdb.service';
 
 @Controller()
 export class AppController {
@@ -20,7 +21,9 @@ export class AppController {
     @Inject(VisitDateRecordService)
     private readonly visitDateRecordService: VisitDateRecordService,
     @InjectRedis()
-    private readonly redis: Redis
+    private readonly redis: Redis,
+    @Inject(InfluxdbService)
+    private readonly influxdbService: InfluxdbService,
   ) { }
   @Get('test')
   async test() {
@@ -60,6 +63,22 @@ export class AppController {
       insertPipeline.zadd(RedisShortVisitRecordDay, dayScore + 1, shortCodeId);
     }
     const pipelineResult = await insertPipeline.exec();
-    
+    // setInterval(() => {
+    //   for (let index = 0; index < 20; index++) {
+    //     setTimeout(() => {
+    //       this.influxdbService.writeVisitRecord({ shortCode: `test${index}`, shortCodeId: index })
+    //       !!(Math.random() * 10 > 5) && this.influxdbService.writeVisitRecord({ shortCode: `test${index}`, shortCodeId: index })
+    //       !!(Math.random() * 10 > 5) && this.influxdbService.writeVisitRecord({ shortCode: `test${index}`, shortCodeId: index })
+    //       !!(Math.random() * 10 > 5) && this.influxdbService.writeVisitRecord({ shortCode: `test${index}`, shortCodeId: index })
+    //       !!(Math.random() * 10 > 5) && this.influxdbService.writeVisitRecord({ shortCode: `test${index}`, shortCodeId: index })
+    //       !!(Math.random() * 10 > 5) && this.influxdbService.writeVisitRecord({ shortCode: `test${index}`, shortCodeId: index })
+    //       !!(Math.random() * 10 > 5) && this.influxdbService.writeVisitRecord({ shortCode: `test${index}`, shortCodeId: index })
+    //       !!(Math.random() * 10 > 5) && this.influxdbService.writeVisitRecord({ shortCode: `test${index}`, shortCodeId: index })
+    //       !!(Math.random() * 10 > 5) && this.influxdbService.writeVisitRecord({ shortCode: `test${index}`, shortCodeId: index })
+
+    //     }, 200);
+    //   }
+    // }, 5000)
+    this.influxdbService.findVisitRecord()
   }
 }
