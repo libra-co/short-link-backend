@@ -4,8 +4,11 @@ export const updateRecordData = (recordData: string | number[], updateIndex, dat
   const recordArray: number[] = typeof recordData === 'string'
     ? JSON.parse(recordData)
     : recordData;
-  recordArray[updateIndex] += data;
+  console.log('updateIndex', updateIndex)
+  recordArray[updateIndex] = recordArray[updateIndex] || 0 + data;
+  console.log('recordArray', recordArray)
   const jsonArray = JSON.stringify(recordArray);
+  console.log('jsonArray', jsonArray)
   return jsonArray;
 };
 
@@ -14,3 +17,12 @@ export const getIsFirstDayOfMonth = (today: dayjs.Dayjs) => {
   const isFirstDayOfMonth = today.isSame(firstDayOfMonth, 'day');
   return isFirstDayOfMonth;
 };
+
+export const getShortCodeIdAndShortCodeFromRedisKey = (key: string) => {
+  const [shortCodeId, shortCode] = key.split('_');
+  return { shortCodeId, shortCode };
+}
+
+export const generateShortCodeRecordRedisKey = (shortCodeId: number, shortCode: string) => {
+  return `${shortCodeId}_${shortCode}`
+}

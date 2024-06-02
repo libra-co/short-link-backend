@@ -1,6 +1,20 @@
 import { RedisModuleOptions } from '@nestjs-modules/ioredis';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
+export const mysqlConfig:TypeOrmModuleOptions = {
+  type: 'mysql',
+  host: 'localhost',
+  port: 3306,
+  username: 'root',
+  password: 'root',
+  logging: true,
+  synchronize: true,
+  database: 'short-url',
+  poolSize: 10,
+  connectorPackage: 'mysql2',
+  entities: [__dirname + '/../src/**/*.entity{.ts,.js}'],
+}
+
 export const database_dev: TypeOrmModuleOptions = {
   type: 'mysql',
   host: 'localhost',
@@ -46,7 +60,7 @@ export const database_server: TypeOrmModuleOptions = {
   },
 };
 
-export const redis_dev: RedisModuleOptions = {
+export const redisConfig: RedisModuleOptions = {
   type: 'single',
   url: 'redis://localhost:6379'
 };
@@ -58,4 +72,12 @@ export const influxDB_pro = {
   org: "short_link",
   bucket: "short_code",
   visitRecordMeasure: "short_code",
+}
+
+export const influxDBConfig = {
+  url: 'http://localhost:8086',
+  token: "QGg7vF_iBU_v29wsI5XXtvb3MVraLUP-Klx-Hh8WGnM5WgRKKos0yGXyz-wiWxZ4Y15Xtlbwpf8QfGifOyjoTQ==",
+  org: "short_link",
+  bucket: "short_link",
+  visitRecordMeasure: "short_link",
 }

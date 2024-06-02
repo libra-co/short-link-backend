@@ -1,17 +1,19 @@
 import { Module } from '@nestjs/common';
-import { InfluxDB, Point } from '@influxdata/influxdb-client';
+import { InfluxDB } from '@influxdata/influxdb-client';
 import { InfluxdbService } from './influxdb.service';
 import { InfluxdbController } from './influxdb.controller';
-import { influxDB_pro } from 'config/database.config';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
+  imports: [],
   controllers: [InfluxdbController],
   providers: [
     InfluxdbService,
     {
       provide: 'INFLUXDB_CLIENT',
-      useFactory() {
-        const { url, token } = influxDB_pro;
+      inject: [ConfigService],
+      useFactory(configService: ConfigService) {
+        const { url, token } = configService.get('influxDBConfig');
         const client = new InfluxDB({ url, token })
         return client;
       }
@@ -19,4 +21,5 @@ import { influxDB_pro } from 'config/database.config';
   ],
   exports: [InfluxdbService],
 })
+
 export class InfluxdbModule { }

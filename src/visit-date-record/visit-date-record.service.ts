@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { VisitDateRecord } from './entities/visit-date-record.entity';
-import { getIsFirstDayOfMonth, updateRecordData } from './utils';
-import dayjs from 'dayjs';
+import { generateShortCodeRecordRedisKey, getIsFirstDayOfMonth, updateRecordData } from './utils';
+import * as dayjs from 'dayjs';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Redis } from 'ioredis';
 import { RedisShortVisitRecordDay, RedisShortVisitRecordMonth, RedisShortVisitRecordWeek, RedisShortVisitRecordYear } from './const';
@@ -21,15 +21,17 @@ export class VisitDateRecordService {
    * @param dateVisitNumber dateVisitNumber async from redis,saved previous day visit number
    * @returns 
    */
-  async updateRecord(shortCodeId: number, dateVisitNumber: number) {
-    const recordEntity = await this.entityManager.findOneBy(VisitDateRecord, { shortCodeId });
+  async updateRecordInMysql(shortCodeId: number, shortCode: string, dateVisitNumber: number) {
+
+    let recordEntity = await this.entityManager.findOneBy(VisitDateRecord, { id: shortCodeId });
     if (!recordEntity) {
-      console.error('record date visit record not found!');
-      return;
+      recordEntity = new VisitDateRecord()
+      recordEntity.shortCodeId = shortCodeId
+      recordEntity.shortCode = shortCode
     }
     // insert previous day from here
     const previousDay = dayjs().subtract(1, 'day');
-    const insertDate = previousDay.date();
+    const insertDate = previousDay.date() - 1; // 1st index is 0
     const insertDay = previousDay.day();
     const insertMonth = previousDay.month();
 
@@ -37,12 +39,13 @@ export class VisitDateRecordService {
     if (insertMonth === 11 && insertDate === 31) return;
 
     const lastDayOfMonth = previousDay.endOf('month').date();
+    console.log('lastDayOfMonth', lastDayOfMonth)
     const {
       week = Array(7).fill(0),
-      month = Array(lastDayOfMonth).fill(0),
+      month = Array(lastDayOfMonth - 1).fill(0),
       year = Array(12).fill(0),
     } = recordEntity;
-
+    console.log('month', month, month.length)
     // Update year data
     recordEntity.year = updateRecordData(year, insertMonth, dateVisitNumber);
     // Update month data
@@ -57,42 +60,45 @@ export class VisitDateRecordService {
     } else {
       recordEntity.week = updateRecordData(week, updateWeekIndex, dateVisitNumber);
     }
+    console.log('recordEntity', recordEntity)
+    await this.entityManager.save(recordEntity)
   }
 
-  async recordVisitInRedis(shortCodeId: number) {
+  async recordVisitInRedis(shortCodeId: number, shortCode: string) {
+    const redisMemberKey = generateShortCodeRecordRedisKey(shortCodeId, shortCode)
     const findPipeline = this.redis.pipeline();
     let dayScore, weekScore, monthScore, yearScore;
-    findPipeline.zscore(RedisShortVisitRecordDay, shortCodeId, (_, res) => { yearScore = parseInt(res); });
-    findPipeline.zscore(RedisShortVisitRecordWeek, shortCodeId, (_, res) => { weekScore = parseInt(res); });
-    findPipeline.zscore(RedisShortVisitRecordMonth, shortCodeId, (_, res) => { monthScore = parseInt(res); });
-    findPipeline.zscore(RedisShortVisitRecordYear, shortCodeId, (_, res) => { yearScore = parseInt(res); });
+    findPipeline.zscore(RedisShortVisitRecordDay, redisMemberKey, (_, res) => { dayScore = parseInt(res); });
+    findPipeline.zscore(RedisShortVisitRecordWeek, redisMemberKey, (_, res) => { weekScore = parseInt(res); });
+    findPipeline.zscore(RedisShortVisitRecordMonth, redisMemberKey, (_, res) => { monthScore = parseInt(res); });
+    findPipeline.zscore(RedisShortVisitRecordYear, redisMemberKey, (_, res) => { yearScore = parseInt(res); });
     await findPipeline.exec();
     const insertPipeline = this.redis.pipeline();
     if (!yearScore) {
-      insertPipeline.zadd(RedisShortVisitRecordYear, 1, shortCodeId);
-      insertPipeline.zadd(RedisShortVisitRecordMonth, 1, shortCodeId);
-      insertPipeline.zadd(RedisShortVisitRecordWeek, 1, shortCodeId);
-      insertPipeline.zadd(RedisShortVisitRecordDay, 1, shortCodeId);
+      insertPipeline.zadd(RedisShortVisitRecordYear, 1, redisMemberKey);
+      insertPipeline.zadd(RedisShortVisitRecordMonth, 1, redisMemberKey);
+      insertPipeline.zadd(RedisShortVisitRecordWeek, 1, redisMemberKey);
+      insertPipeline.zadd(RedisShortVisitRecordDay, 1, redisMemberKey);
     } else if (!monthScore) {
-      insertPipeline.zadd(RedisShortVisitRecordYear, yearScore + 1, shortCodeId);
-      insertPipeline.zadd(RedisShortVisitRecordMonth, 1, shortCodeId);
-      insertPipeline.zadd(RedisShortVisitRecordWeek, 1, shortCodeId);
-      insertPipeline.zadd(RedisShortVisitRecordDay, 1, shortCodeId);
+      insertPipeline.zadd(RedisShortVisitRecordYear, yearScore + 1, redisMemberKey);
+      insertPipeline.zadd(RedisShortVisitRecordMonth, 1, redisMemberKey);
+      insertPipeline.zadd(RedisShortVisitRecordWeek, 1, redisMemberKey);
+      insertPipeline.zadd(RedisShortVisitRecordDay, 1, redisMemberKey);
     } else if (!weekScore) {
-      insertPipeline.zadd(RedisShortVisitRecordYear, yearScore + 1, shortCodeId);
-      insertPipeline.zadd(RedisShortVisitRecordMonth, monthScore + 1, shortCodeId);
-      insertPipeline.zadd(RedisShortVisitRecordWeek, 1, shortCodeId);
-      insertPipeline.zadd(RedisShortVisitRecordDay, 1, shortCodeId);
+      insertPipeline.zadd(RedisShortVisitRecordYear, yearScore + 1, redisMemberKey);
+      insertPipeline.zadd(RedisShortVisitRecordMonth, monthScore + 1, redisMemberKey);
+      insertPipeline.zadd(RedisShortVisitRecordWeek, 1, redisMemberKey);
+      insertPipeline.zadd(RedisShortVisitRecordDay, 1, redisMemberKey);
     } else if (!dayScore) {
-      insertPipeline.zadd(RedisShortVisitRecordYear, yearScore + 1, shortCodeId);
-      insertPipeline.zadd(RedisShortVisitRecordMonth, monthScore + 1, shortCodeId);
-      insertPipeline.zadd(RedisShortVisitRecordWeek, weekScore + 1, shortCodeId);
-      insertPipeline.zadd(RedisShortVisitRecordDay, 1, shortCodeId);
+      insertPipeline.zadd(RedisShortVisitRecordYear, yearScore + 1, redisMemberKey);
+      insertPipeline.zadd(RedisShortVisitRecordMonth, monthScore + 1, redisMemberKey);
+      insertPipeline.zadd(RedisShortVisitRecordWeek, weekScore + 1, redisMemberKey);
+      insertPipeline.zadd(RedisShortVisitRecordDay, 1, redisMemberKey);
     } else {
-      insertPipeline.zadd(RedisShortVisitRecordYear, yearScore + 1, shortCodeId);
-      insertPipeline.zadd(RedisShortVisitRecordMonth, monthScore + 1, shortCodeId);
-      insertPipeline.zadd(RedisShortVisitRecordWeek, weekScore + 1, shortCodeId);
-      insertPipeline.zadd(RedisShortVisitRecordDay, dayScore + 1, shortCodeId);
+      insertPipeline.zadd(RedisShortVisitRecordYear, yearScore + 1, redisMemberKey);
+      insertPipeline.zadd(RedisShortVisitRecordMonth, monthScore + 1, redisMemberKey);
+      insertPipeline.zadd(RedisShortVisitRecordWeek, weekScore + 1, redisMemberKey);
+      insertPipeline.zadd(RedisShortVisitRecordDay, dayScore + 1, redisMemberKey);
     }
     console.log()
     const pipelineResult = await insertPipeline.exec();

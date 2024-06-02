@@ -1,46 +1,30 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InfluxDB, Point } from '@influxdata/influxdb-client';
-import { influxDB_pro } from 'config/database.config';
+import { ConfigService } from '@nestjs/config';
 import { VisitRecordPoint } from './type';
 
 @Injectable()
 export class InfluxdbService {
   influxdb: InfluxDB;
   constructor(
-    @Inject('INFLUXDB_CLIENT')
-    private readonly client: InfluxDB
+    @Inject('INFLUXDB_CLIENT') private readonly client: InfluxDB,
+    @Inject(ConfigService) private readonly configService: ConfigService
   ) { }
 
   writeVisitRecord(data: VisitRecordPoint) {
-    const { org, bucket, visitRecordMeasure } = influxDB_pro;
+    const { org, bucket, visitRecordMeasure } = this.configService.get('influxDBConfig');
+    const { shortCode, shortCodeId, dateVisitNumber } = data
     const point = new Point(visitRecordMeasure)
-      .tag('shortCode', data.shortCode)
-      .tag('shortCodeId', data.shortCodeId.toString())
-      .intField('test', Math.random() * 10)
-    const writeClient = this.client.getWriteApi(org, bucket, 's')
-    // console.log('point', point)
+      .tag('shortCode', shortCode)
+      .tag('shortCodeId', shortCodeId.toString())
+      .intField('dateVisitNumber', dateVisitNumber)
+    const writeClient = this.client.getWriteApi(org, bucket, 'ns')
     writeClient.writePoint(point)
     writeClient.flush(true)
-
-    //   let writeClient = this.client.getWriteApi(org, bucket, 'ns')
-
-    //   for (let i = 0; i < 5; i++) {
-    //     let point = new Point('measurement1')
-    //       .tag('tagname1', 'tagvalue1')
-    //       .intField('field1', i)
-
-    //     void setTimeout(() => {
-    //       writeClient.writePoint(point)
-    //     }, i * 1000) // separate points by 1 second
-
-    //     void setTimeout(() => {
-    //       writeClient.flush()
-    //     }, 5000)
-    //   }
   }
 
   findVisitRecord() {
-    const { org, bucket, visitRecordMeasure } = influxDB_pro;
+    const { org, bucket, visitRecordMeasure } = this.configService.get('influxDBConfig');
     let queryClient = this.client.getQueryApi(org)
     let fluxQuery =
       `

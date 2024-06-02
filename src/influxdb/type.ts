@@ -1,4 +1,5 @@
 export type VisitRecordPoint = {
-  shortCodeId: number;
-  shortCode: string;
+  shortCodeId: number,
+  shortCode: string,
+  dateVisitNumber: number
 }

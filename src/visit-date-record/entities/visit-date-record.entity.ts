@@ -9,7 +9,7 @@ export class VisitDateRecord {
   })
   shortCodeId: number;
   @Column({
-    length: 255,
+    length: 10,
     comment: 'related short code'
   })
   shortCode: string;

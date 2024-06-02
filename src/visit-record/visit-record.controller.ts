@@ -15,12 +15,12 @@ import { CreateVisitRecordDto } from './dto/visit-record.dto';
 import { ShortCodeService } from 'src/short-link/short-link.service';
 import { ShortLinkMapService } from 'src/short-link-map/short-link-map.service';
 import { decryptVisitRecordId, encryptVisitRecordId } from 'src/utils/crypto';
-import { VisitRecordCryptoSecretKeyIv } from 'config/crypto.config';
 import { MessageService } from 'src/message/message.service';
 import { MessageTypeEnum } from 'src/message/message.type';
 import { messageContentTemplate } from 'src/message/utils';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import Redis from 'ioredis';
+import { VisitDateRecordService } from 'src/visit-date-record/visit-date-record.service';
 
 @Controller('visit-record')
 export class VisitRecordController {
@@ -33,7 +33,9 @@ export class VisitRecordController {
     @Inject(MessageService)
     private readonly messageService: MessageService,
     @InjectRedis()
-    private readonly redis: Redis
+    private readonly redis: Redis,
+    @Inject(VisitDateRecordService)
+    private readonly visitDateRecordService: VisitDateRecordService,
   ) { }
 
   @Post('record/:shortCode')
@@ -69,6 +71,9 @@ export class VisitRecordController {
 
     const recordEntity = await this.visitRecordService.createVisitRecord(visitRecord);
     let recordId = encryptVisitRecordId(recordEntity.id);
+
+    // Update short code visit count
+    await this.visitDateRecordService.recordVisitInRedis(shortCodeEntity.id, shortCodeEntity.shortCode);
     return {
       data: {
         url: shortLinkMapEntity.originalUrl,
