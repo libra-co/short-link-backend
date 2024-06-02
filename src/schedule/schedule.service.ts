@@ -19,6 +19,8 @@ export class ScheduleService {
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async updateVisitRecordTask() {
     const res = await this.redis.zrange(RedisShortVisitRecordDay, 0, -1, 'WITHSCORES')
+    // Clear the daily data in redis
+    await this.redis.del(RedisShortVisitRecordDay)
     const visitDailyRecordList = generateMemberList(res);
     // async to mysql
     visitDailyRecordList.forEach(item => this.visitDateRecordService.updateRecordInMysql(item.shortCodeId, item.shortCode, item.dateVisitNumber))

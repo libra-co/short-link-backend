@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import * as dayjs from "dayjs";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class VisitDateRecord {
@@ -28,4 +29,8 @@ export class VisitDateRecord {
     comment: 'record recent week visit record,unit: month, default is Array in json'
   })
   year: string;
+  @Column({
+    type: 'date'
+  })
+  recordDate: string;
 }
