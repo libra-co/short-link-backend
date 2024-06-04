@@ -6,7 +6,11 @@ import { SharePrivateStatus, ShortCodeStatus } from './short-link.type';
 import { ShortCode } from './entities/short-link.entity';
 import { GenerateShortLinkDto } from 'src/short-link-map/dtos/generate-short-link.dto';
 import { ShortCodeMap } from 'src/short-link-map/entities/link-map.entity';
-import { ChangeStatusDto, ListShortCodeDto } from './dto/short-lin.dto';
+import { ChangeStatusDto, DeleteShortCodeByIdDto, ListShortCodeDto } from './dto/short-lin.dto';
+import { DeleteStatus } from 'src/common/types/common.type';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import { Redis } from 'ioredis';
+import { RedisDeletedShortCodeIdList } from 'src/common/consts/redis';
 
 @Injectable()
 export class ShortCodeService {
@@ -14,6 +18,8 @@ export class ShortCodeService {
   private readonly shortCodeRepository: Repository<ShortCode>;
   @InjectEntityManager()
   private readonly entityManager: EntityManager;
+  @InjectRedis()
+  private readonly redis: Redis;
 
   async genShortLink(): Promise<ShortCode>;
   async genShortLink(
@@ -138,5 +144,19 @@ export class ShortCodeService {
 
   async getShortCodeById(id: number) {
     return this.shortCodeRepository.findOneBy({ id });
+  }
+
+  /**
+   * 1. Mark `isDelete` field as Delete in Mysql
+   * 2. Add deleted id in RedisDeletedShortCodeIdList list in Redis
+   */
+  async deleteShortCodeById({ id }: DeleteShortCodeByIdDto) {
+    const shortCodeEntity = await this.shortCodeRepository.findOneBy({ id })
+    if (!shortCodeEntity) throw new Error('Short code not found')
+    // Mark `isDelete` field as Delete
+    shortCodeEntity.isDelete = DeleteStatus.Delete
+    await this.shortCodeRepository.save(shortCodeEntity)
+    // Add deleted id in RedisDeletedShortCodeIdList list in Redis
+    await this.redis.sadd(RedisDeletedShortCodeIdList, id)
   }
 }

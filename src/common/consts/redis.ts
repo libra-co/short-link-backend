@@ -2,3 +2,4 @@ export const RedisShortVisitRecordDay = 'redisShortVisitRecordDay' // current da
 export const RedisShortVisitRecordWeek = 'redisShortVisitRecordWeek'
 export const RedisShortVisitRecordMonth = 'redisShortVisitRecordMonth'
 export const RedisShortVisitRecordYear = 'redisShortVisitRecordYear'
+export const RedisDeletedShortCodeIdList = 'redisDeleteShortCodeIdList'

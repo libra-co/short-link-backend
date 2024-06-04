@@ -18,14 +18,19 @@ export class InfluxdbService {
       .tag('shortCode', shortCode)
       .tag('shortCodeId', shortCodeId.toString())
       .intField('dateVisitNumber', dateVisitNumber)
-    const writeClient = this.client.getWriteApi(org, bucket, 'ns')
+      .booleanField('isDeleted', false)
+    const writeClient = this.client.getWriteApi(org, bucket, 's')
     writeClient.writePoint(point)
     writeClient.flush(true)
   }
 
+  /**
+   * when find record, need filter deleted record!
+   */
   findVisitRecord() {
     const { org, bucket, visitRecordMeasure } = this.configService.get('influxDBConfig');
     let queryClient = this.client.getQueryApi(org)
+    // TODO when find record, need filter deleted record!
     let fluxQuery =
       `
     from(bucket: "${bucket}")

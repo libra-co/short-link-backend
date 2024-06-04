@@ -6,7 +6,7 @@ import { generateShortCodeRecordRedisKey, getIsFirstDayOfMonth, updateRecordData
 import * as dayjs from 'dayjs';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Redis } from 'ioredis';
-import { RedisShortVisitRecordDay, RedisShortVisitRecordMonth, RedisShortVisitRecordWeek, RedisShortVisitRecordYear } from './const';
+import { RedisShortVisitRecordDay, RedisShortVisitRecordMonth, RedisShortVisitRecordWeek, RedisShortVisitRecordYear } from '../common/consts/redis';
 
 @Injectable()
 export class VisitDateRecordService {

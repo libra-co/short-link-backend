@@ -1,9 +1,9 @@
-import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Inject, Post, Query } from '@nestjs/common';
 
 import { ShortCodeService } from './short-link.service';
 import { ShortLinkMapService } from 'src/short-link-map/short-link-map.service';
 import { GenerateShortLinkDto } from 'src/short-link-map/dtos/generate-short-link.dto';
-import { ChangeStatusDto, ListShortCodeDto } from './dto/short-lin.dto';
+import { ChangeStatusDto, DeleteShortCodeByIdDto, ListShortCodeDto } from './dto/short-lin.dto';
 import { SharePrivateStatus, ShortCodeStatus } from './short-link.type';
 
 @Controller('short-code')
@@ -12,7 +12,7 @@ export class ShortCodeController {
     private readonly shortCodeService: ShortCodeService,
     @Inject(ShortLinkMapService)
     private readonly shortLinkMapService: ShortLinkMapService,
-  ) {}
+  ) { }
 
   @Get('list')
   async listShortCode(
@@ -54,5 +54,21 @@ export class ShortCodeController {
     const shortCode = await this.shortCodeService.genShortLink(options);
     const linkMap = this.shortLinkMapService.mapShortLink(shortCode, url);
     return await this.shortCodeService.createShortLink(shortCode, linkMap);
+  }
+
+  @Post('delete')
+  async deleteShortLinkById(@Body() body: DeleteShortCodeByIdDto) {
+    try {
+      await this.shortCodeService.deleteShortCodeById(body)
+    } catch (error) {
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error
+      }
+    }
+    return {
+      code: HttpStatus.OK,
+      message: 'short code delete successfully'
+    }
   }
 }
