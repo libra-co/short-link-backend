@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { SharePrivateStatus, ShortCodeStatus } from '../short-link.type';
+import { DeleteStatus } from 'src/common/types/common.type';
 
 @Entity()
 export class ShortCode {
@@ -22,7 +23,7 @@ export class ShortCode {
   @Column({
     type: 'int',
     default: ShortCodeStatus.ENABLE,
-    comment: '0 - unoccupied, 1 - occupied',
+    comment: '0 - disabled, 1 - enabled',
   })
   status: ShortCodeStatus;
 
@@ -54,6 +55,12 @@ export class ShortCode {
       'visit limitation,if it is -1, it means no limitation, when it is greater than 0, it means the limitation of visit times',
   })
   visitLimit: number;
+
+  @Column({
+    default: 0,
+    comment: '0 - active, 1 - deleted'
+  })
+  isDelete: DeleteStatus
 
   @CreateDateColumn()
   createTime: Date;

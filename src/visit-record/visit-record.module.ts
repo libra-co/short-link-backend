@@ -5,9 +5,10 @@ import { ShortCodeModule } from 'src/short-link/short-link.module';
 import { HttpModule } from '@nestjs/axios';
 import { ShortLinkMapModule } from 'src/short-link-map/short-link-map.module';
 import { MessageModule } from 'src/message/message.module';
+import { VisitDateRecordModule } from 'src/visit-date-record/visit-date-record.module';
 
 @Module({
-  imports: [HttpModule, ShortCodeModule, ShortLinkMapModule, MessageModule],
+  imports: [HttpModule, ShortCodeModule, ShortLinkMapModule, MessageModule, VisitDateRecordModule],
   controllers: [VisitRecordController],
   providers: [VisitRecordService],
 })

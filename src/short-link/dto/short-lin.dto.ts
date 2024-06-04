@@ -12,3 +12,7 @@ export interface ChangeStatusDto {
   shortCode?: string;
   status: ShortCodeStatus;
 }
+
+export interface DeleteShortCodeByIdDto {
+  id: number
+}
