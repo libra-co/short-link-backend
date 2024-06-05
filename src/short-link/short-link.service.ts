@@ -6,7 +6,7 @@ import { SharePrivateStatus, ShortCodeStatus } from './short-link.type';
 import { ShortCode } from './entities/short-link.entity';
 import { GenerateShortLinkDto } from 'src/short-link-map/dtos/generate-short-link.dto';
 import { ShortCodeMap } from 'src/short-link-map/entities/link-map.entity';
-import { ChangeStatusDto, DeleteShortCodeByIdDto, ListShortCodeDto } from './dto/short-lin.dto';
+import { ChangeStatusDto, DeleteShortCodeByIdDto, ListShortCodeDto } from './dto/short-link.dto';
 import { DeleteStatus } from 'src/common/types/common.type';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Redis } from 'ioredis';
@@ -38,6 +38,7 @@ export class ShortCodeService {
     const shortCodeEntity = new ShortCode();
     shortCodeEntity.shortCode = shortCode;
     shortCodeEntity.status = ShortCodeStatus.ENABLE;
+
     if (options) {
       // If the private share password is set, then the private share status is private
       if (options.privateSharePassword) {
@@ -46,33 +47,21 @@ export class ShortCodeService {
         shortCodeEntity.privateShare = SharePrivateStatus.PRIVATE;
       }
       shortCodeEntity.visitLimit = options.visitLimit || 0;
+      shortCodeEntity.note = options.note || '';
     }
     return shortCodeEntity;
   }
 
   // save short code and link map into the database
   async createShortLink(shortCode: ShortCode, linkMap: ShortCodeMap) {
-    try {
-      await this.entityManager.transaction(
-        async (transactionalEntityManager) => {
-          const { id: shortCodeId } = await transactionalEntityManager.save(shortCode);
-          linkMap.shortCodeId = shortCodeId;
-          await transactionalEntityManager.save(linkMap);
-        },
-      );
-    } catch (error) {
-      return {
-        code: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Failed to save short link',
-      };
-    }
-    return {
-      code: HttpStatus.OK,
-      data: {
-        shortCode: shortCode.shortCode,
+    const shortCodeEntity = await this.entityManager.transaction(
+      async (transactionalEntityManager) => {
+        const { id: shortCodeId } = await transactionalEntityManager.save(shortCode);
+        linkMap.shortCodeId = shortCodeId;
+        return await transactionalEntityManager.save(linkMap);
       },
-      message: 'Short link saved successfully',
-    };
+    );
+    return shortCodeEntity
   }
 
   async getShortCodeByCode(shortCode: string) {
@@ -103,43 +92,24 @@ export class ShortCodeService {
         'visitLimit',
       ],
     });
-    return {
-      data: {
-        data: res[0],
-        total: res[1],
-      },
-      code: HttpStatus.OK,
-      message: 'Short code list fetched successfully',
-    };
+
+    if (!res) throw new Error('Find short code list failed')
+    const [data, total] = res
+
+    return { data, total, };
   }
 
   async changeStatus({ id, shortCode, status }: ChangeStatusDto) {
     // Check if the id or short code both not provided
-    if (!id && !shortCode) {
-      return {
-        code: HttpStatus.BAD_REQUEST,
-        message: 'Id or short code is required',
-      };
-    }
+    if (!id && !shortCode) throw new Error('Id or short code is required')
     // If the id is not provided, then find the short code by the short code
     const shortCodeEntity = await this.shortCodeRepository.findOne({
       where: { shortCode, id },
     });
-    if (!shortCodeEntity) {
-      return {
-        code: HttpStatus.NOT_FOUND,
-        message: 'Short code not found',
-      };
-    }
+    if (!shortCodeEntity) throw new Error('Short code not found')
     shortCodeEntity.status = status;
-    await this.shortCodeRepository.save(shortCodeEntity);
-    return {
-      code: HttpStatus.OK,
-      data: {
-        shortCode: shortCodeEntity.shortCode,
-      },
-      message: 'Short code status updated successfully',
-    };
+    return await this.shortCodeRepository.save(shortCodeEntity);
+
   }
 
   async getShortCodeById(id: number) {

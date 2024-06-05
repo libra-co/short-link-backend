@@ -21,6 +21,8 @@ import { messageContentTemplate } from 'src/message/utils';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import Redis from 'ioredis';
 import { VisitDateRecordService } from 'src/visit-date-record/visit-date-record.service';
+import { BasicResponse } from 'src/common/types/common.type';
+import { CreateVisitRecordVo, GetIpLocationVo, GetShortCodeVisitDetailByIdVo } from './vo/visit-record.vo';
 
 @Controller('visit-record')
 export class VisitRecordController {
@@ -120,12 +122,36 @@ export class VisitRecordController {
   }
 
   @Get('detail')
-  async getShortCodeVisitDetailById(@Query('id') id: string) {
-    return this.visitRecordService.getShortCodeVisitDetailById(+id);
+  async getShortCodeVisitDetailById(@Query('id') id: string): BasicResponse<GetShortCodeVisitDetailByIdVo> {
+    try {
+      const data = await this.visitRecordService.getShortCodeVisitDetailById(+id);
+      return {
+        data,
+        message: 'Visit detail fetched successfully',
+        code: HttpStatus.OK,
+      };
+    } catch (error) {
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error || 'Internal error',
+      };
+    }
   }
 
   @Get('ip/:ip')
-  async getIpLocation(@Param('ip') ip: string) {
-    return this.visitRecordService.getIpLocation(ip);
+  async getIpLocation(@Param('ip') ip: string): BasicResponse<GetIpLocationVo> {
+    try {
+      const data = await this.visitRecordService.getIpLocation(ip);
+      return {
+        data,
+        code: HttpStatus.OK,
+        message: 'success'
+      }
+    } catch (error) {
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error || 'Internal error'
+      }
+    }
   }
 }

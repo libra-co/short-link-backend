@@ -62,6 +62,13 @@ export class ShortCode {
   })
   isDelete: DeleteStatus
 
+  @Column({
+    length: 255,
+    default: '',
+    comment: 'notes'
+  })
+  note: string
+
   @CreateDateColumn()
   createTime: Date;
 
