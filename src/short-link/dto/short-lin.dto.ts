@@ -1,6 +1,11 @@
 import { PaginationDto } from 'src/common/types/common.type';
 import { SharePrivateStatus, ShortCodeStatus } from '../short-link.type';
 
+export interface AddShortLinkDto {
+  url: string,
+  note?: string,
+}
+
 export interface ListShortCodeDto extends PaginationDto {
   shortCode?: string;
   status?: ShortCodeStatus;

@@ -38,6 +38,7 @@ export class ShortCodeService {
     const shortCodeEntity = new ShortCode();
     shortCodeEntity.shortCode = shortCode;
     shortCodeEntity.status = ShortCodeStatus.ENABLE;
+
     if (options) {
       // If the private share password is set, then the private share status is private
       if (options.privateSharePassword) {
@@ -46,6 +47,7 @@ export class ShortCodeService {
         shortCodeEntity.privateShare = SharePrivateStatus.PRIVATE;
       }
       shortCodeEntity.visitLimit = options.visitLimit || 0;
+      shortCodeEntity.note = options.note || '';
     }
     return shortCodeEntity;
   }

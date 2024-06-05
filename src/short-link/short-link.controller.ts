@@ -3,7 +3,7 @@ import { Body, Controller, Get, HttpStatus, Inject, Post, Query } from '@nestjs/
 import { ShortCodeService } from './short-link.service';
 import { ShortLinkMapService } from 'src/short-link-map/short-link-map.service';
 import { GenerateShortLinkDto } from 'src/short-link-map/dtos/generate-short-link.dto';
-import { ChangeStatusDto, DeleteShortCodeByIdDto, ListShortCodeDto } from './dto/short-lin.dto';
+import { AddShortLinkDto, ChangeStatusDto, DeleteShortCodeByIdDto, ListShortCodeDto } from './dto/short-lin.dto';
 import { SharePrivateStatus, ShortCodeStatus } from './short-link.type';
 
 @Controller('short-code')
@@ -39,9 +39,10 @@ export class ShortCodeController {
     return await this.shortCodeService.changeStatus(changeStatusDto);
   }
 
-  @Get()
-  async genShortLink(@Query('url') url: string) {
-    const shortCode = await this.shortCodeService.genShortLink();
+  @Post()
+  async genShortLink(@Body() body: AddShortLinkDto) {
+    const { url, note } = body;
+    const shortCode = await this.shortCodeService.genShortLink({ note });
     const linkMap = this.shortLinkMapService.mapShortLink(shortCode, url);
     return await this.shortCodeService.createShortLink(shortCode, linkMap);
   }

@@ -5,4 +5,5 @@ export class GenerateShortLinkDto {
   privateSharePrompt?: string;
   privateSharePassword?: string;
   visitLimit?: SharePrivateStatus;
+  note?: string;
 }
