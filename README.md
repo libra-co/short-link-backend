@@ -64,6 +64,11 @@ $ pnpm run test:cov
 pnpm run build
 ```
 
+## config
+
+config database in `config/database.config.ts`
+config crypto secret key in `config/crypto.config.ts`
+
 ## setup
 
 set X-Forwarded-For header in nginx,to get the real ip address of the client
