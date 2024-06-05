@@ -9,7 +9,12 @@ Enhance features of creating shortLink
 - [x] shortLink add filed `delete`, to delete the shortLink, add delete api
 - [ ] shortLink add filed `expire`, to set the expire time of the shortLink
 - [x] shortLinkMap add `note` field, to store the notes of the shortLink
-- [ ] change common shortLink request to `POST` method
+- [x] change common shortLink request to `POST` method
+
+### [performance] global
+
+- [ ] Add class-validator param validation
+- [x] Transfer the interface response body to the controller for return
 
 ### [Feature] data overview
 

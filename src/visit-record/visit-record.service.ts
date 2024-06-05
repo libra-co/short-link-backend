@@ -2,11 +2,13 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateVisitRecordParams, UrlAccessStatusEnum } from './visit-record.type';
 import { VisitRecord } from './entities/link-record.entity';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import {  EntityManager,  } from 'typeorm';
+import { EntityManager, } from 'typeorm';
 import { ShortCodeStatus, VisitType } from 'src/short-link/short-link.type';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { ShortCode } from 'src/short-link/entities/short-link.entity';
+import { CreateVisitRecordVo, GetIpLocationVo } from './vo/visit-record.vo';
+import { BasicResponse } from 'src/common/types/common.type';
 
 @Injectable()
 export class VisitRecordService {
@@ -30,7 +32,16 @@ export class VisitRecordService {
       shortCodeId,
       ip,
     });
-    const { country, province, city, isp } = await this.getIpLocation(ip);
+    let country, province, city, isp;
+    try {
+      const res = await this.getIpLocation(ip);
+      country = res.country,
+        province = res.province,
+        city = res.city,
+        isp = res.isp
+    } catch (error) {
+      console.error('error', error)
+    }
     const visitRecord = new VisitRecord();
     visitRecord.ip = ip;
     visitRecord.shortCodeId = shortCodeId;
@@ -78,19 +89,7 @@ export class VisitRecordService {
     }
   }
 
-  findAll() {
-    return `This action returns all visitRecord`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} visitRecord`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} visitRecord`;
-  }
-
-  async getIpLocation(ip: string) {
+  async getIpLocation(ip: string): Promise<GetIpLocationVo> {
     const queryUrl = `https://searchplugin.csdn.net/api/v1/ip/get?ip=${ip}`;
     const data = (await firstValueFrom(
       this.httpService.get(queryUrl).pipe(
@@ -107,16 +106,11 @@ export class VisitRecordService {
         return { country, province, city, isp };
       };
     }
-    console.error(data.data.msg);
-    return {};
+    throw new Error(data.data.msg)
   }
 
   async getShortCodeVisitDetailById(shortCodeId: number) {
-    if (!shortCodeId)
-      return {
-        code: HttpStatus.BAD_REQUEST,
-        message: 'Short code not found',
-      };
+    if (!shortCodeId) throw new Error('Short code not found')
     const [data, total] = await this.entityManager.findAndCount(VisitRecord, {
       where: { shortCodeId },
       select: [
@@ -134,11 +128,8 @@ export class VisitRecordService {
         'isp',
       ],
     });
-    return {
-      data: { data, total },
-      message: 'Visit detail fetched successfully',
-      code: HttpStatus.OK,
-    };
+
+    return { data, total }
   }
 
   async updateFailedAccessRecord(id: number) {
