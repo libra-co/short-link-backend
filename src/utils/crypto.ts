@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { VisitRecordCryptoSecretKey, VisitRecordCryptoSecretKeyIv } from 'config/crypto.config';
+import { VisitRecordCryptoSecretKey, VisitRecordCryptoSecretKeyIv } from 'config/local.config';
 
 export const encryptVisitRecordId = (id: number) => {
   const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(VisitRecordCryptoSecretKey), VisitRecordCryptoSecretKeyIv);

@@ -6,7 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule as NestScheduleModule } from '@nestjs/schedule';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { mysqlConfig, redisConfig, influxDBConfig } from '../config/database.config';
+import { mysqlConfig, redisConfig, influxDBConfig,commonConfig } from '../config/local.config';
 import { ShortCodeModule } from './short-link/short-link.module';
 import { ShortLinkMapModule } from './short-link-map/short-link-map.module';
 import { join } from 'path';
@@ -15,7 +15,6 @@ import { MessageModule } from './message/message.module';
 import { VisitDateRecordModule } from './visit-date-record/visit-date-record.module';
 import { InfluxdbModule } from './influxdb/influxdb.module';
 import { ScheduleModule } from './schedule/schedule.module';
-import { commonConfig } from 'config/common'
 
 @Module({
   imports: [

@@ -26,6 +26,17 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+
+## Configuration
+
+1. Copy the `database.config.ts.template` file under the config folder, rename it to `database.config.ts`, and modify the configuration items as needed.
+
+2. set X-Forwarded-For header in nginx,to get the real ip address of the client
+
+```text
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+```
+
 ## Installation
 
 ```bash
@@ -62,19 +73,6 @@ $ pnpm run test:cov
 
 ```bash
 pnpm run build
-```
-
-## config
-
-config database in `config/database.config.ts`
-config crypto secret key in `config/crypto.config.ts`
-
-## setup
-
-set X-Forwarded-For header in nginx,to get the real ip address of the client
-
-```text
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 ```
 
 ## Support
