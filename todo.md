@@ -8,7 +8,7 @@ Enhance features of creating shortLink
 
 - [x] shortLink add filed `delete`, to delete the shortLink, add delete api
 - [ ] shortLink add filed `expire`, to set the expire time of the shortLink
-- [ ] shortLinkMap add `notes` field, to store the notes of the shortLink
+- [x] shortLinkMap add `note` field, to store the notes of the shortLink
 - [ ] change common shortLink request to `POST` method
 
 ### [Feature] data overview
