@@ -19,21 +19,10 @@ export const mysqlConfig:TypeOrmModuleOptions = {
   poolSize: 10,
   connectorPackage: 'mysql2',
   entities: [__dirname + '/../src/**/*.entity{.ts,.js}'],
+  extra: {
+    // authPlugin: 'sha256_password', // for mysql 8.0
+  },
 }
-
-export const database_dev: TypeOrmModuleOptions = {
-  type: 'mysql',
-  host: 'localhost',
-  port: 3306,
-  username: 'root',
-  password: 'root',
-  logging: true,
-  synchronize: true,
-  database: 'short-url',
-  poolSize: 10,
-  connectorPackage: 'mysql2',
-  entities: [__dirname + '/../src/**/*.entity{.ts,.js}'],
-};
 
 export const redisConfig: RedisModuleOptions = {
   type: 'single',
