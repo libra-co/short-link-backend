@@ -1,14 +1,13 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
-import { CreateVisitRecordParams, UrlAccessStatusEnum } from './visit-record.type';
-import { VisitRecord } from './entities/link-record.entity';
+import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager, } from 'typeorm';
-import { ShortCodeStatus, VisitType } from 'src/short-link/short-link.type';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
+import { CreateVisitRecordParams, UrlAccessStatusEnum } from './visit-record.type';
+import { VisitRecord } from './entities/link-record.entity';
+import { ShortCodeStatus, VisitType } from 'src/short-link/short-link.type';
 import { ShortCode } from 'src/short-link/entities/short-link.entity';
-import { CreateVisitRecordVo, GetIpLocationVo } from './vo/visit-record.vo';
-import { BasicResponse } from 'src/common/types/common.type';
+import { GetIpLocationVo } from './vo/visit-record.vo';
 
 @Injectable()
 export class VisitRecordService {
@@ -38,9 +37,9 @@ export class VisitRecordService {
       country = res.country,
         province = res.province,
         city = res.city,
-        isp = res.isp
+        isp = res.isp;
     } catch (error) {
-      console.error('error', error)
+      console.error('error', error);
     }
     const visitRecord = new VisitRecord();
     visitRecord.ip = ip;
@@ -106,11 +105,11 @@ export class VisitRecordService {
         return { country, province, city, isp };
       };
     }
-    throw new Error(data.data.msg)
+    throw new Error(data.data.msg);
   }
 
   async getShortCodeVisitDetailById(shortCodeId: number) {
-    if (!shortCodeId) throw new Error('Short code not found')
+    if (!shortCodeId) throw new Error('Short code not found');
     const [data, total] = await this.entityManager.findAndCount(VisitRecord, {
       where: { shortCodeId },
       select: [
@@ -129,7 +128,7 @@ export class VisitRecordService {
       ],
     });
 
-    return { data, total }
+    return { data, total };
   }
 
   async updateFailedAccessRecord(id: number) {
