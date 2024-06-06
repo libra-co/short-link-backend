@@ -25,9 +25,7 @@ export class ShortCodeService {
   async genShortLink(
     options: Omit<GenerateShortLinkDto, 'url'>,
   ): Promise<ShortCode>;
-  async genShortLink(
-    options?: Omit<GenerateShortLinkDto, 'url'>,
-  ): Promise<ShortCode> {
+  async genShortLink(options?: Omit<GenerateShortLinkDto, 'url'>,): Promise<ShortCode> {
     const shortCode = genShortCode();
     const foundCodeEntity = await this.shortCodeRepository.findOneBy({
       shortCode,
