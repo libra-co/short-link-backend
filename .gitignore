@@ -58,6 +58,3 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 # local config
 /config/local.config.ts
 /config/local.config.js
-
-# vscode workspace settings
-.vscode/settings.json
