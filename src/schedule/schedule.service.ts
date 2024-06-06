@@ -5,7 +5,7 @@ import { generateMemberList } from './utils';
 import { VisitDateRecordService } from 'src/visit-date-record/visit-date-record.service';
 import { InfluxdbService } from 'src/influxdb/influxdb.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { RedisShortVisitRecordDay } from 'src/common/consts/redis';
+import { RedisShortVisitRecordDay } from 'src/common/const/redis';
 
 @Injectable()
 export class ScheduleService {

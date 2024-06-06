@@ -10,7 +10,7 @@ import { ShortCodeMap } from 'src/short-link-map/entities/link-map.entity';
 import { ChangeStatusDto, DeleteShortCodeByIdDto, ListShortCodeDto } from './dto/short-link.dto';
 import { DeleteStatus } from 'src/common/types/common.type';
 import { InjectRedis } from '@nestjs-modules/ioredis';
-import { RedisDeletedShortCodeIdList } from 'src/common/consts/redis';
+import { RedisDeletedShortCodeIdList } from 'src/common/const/redis';
 
 @Injectable()
 export class ShortCodeService {
