@@ -1,15 +1,6 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Ip,
-  Inject,
-  HttpStatus,
-  Query,
-  Headers,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Ip, Inject, HttpStatus, Query, Headers, } from '@nestjs/common';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import Redis from 'ioredis';
 import { VisitRecordService } from './visit-record.service';
 import { CreateVisitRecordDto } from './dto/visit-record.dto';
 import { ShortCodeService } from 'src/short-link/short-link.service';
@@ -18,11 +9,9 @@ import { decryptVisitRecordId, encryptVisitRecordId } from 'src/utils/crypto';
 import { MessageService } from 'src/message/message.service';
 import { MessageTypeEnum } from 'src/message/message.type';
 import { messageContentTemplate } from 'src/message/utils';
-import { InjectRedis } from '@nestjs-modules/ioredis';
-import Redis from 'ioredis';
 import { VisitDateRecordService } from 'src/visit-date-record/visit-date-record.service';
 import { BasicResponse } from 'src/common/types/common.type';
-import { CreateVisitRecordVo, GetIpLocationVo, GetShortCodeVisitDetailByIdVo } from './vo/visit-record.vo';
+import { GetIpLocationVo, GetShortCodeVisitDetailByIdVo } from './vo/visit-record.vo';
 
 @Controller('visit-record')
 export class VisitRecordController {
@@ -86,7 +75,9 @@ export class VisitRecordController {
   }
 
   @Get('access-failed/:recordId')
-  async updateAccessStatus(@Param('recordId') recordId: string) {
+  async updateAccessStatus(
+    @Param('recordId') recordId: string
+  ) {
     const id = decryptVisitRecordId(recordId);
     console.log('id', id);
     if (!id) return {
@@ -122,7 +113,9 @@ export class VisitRecordController {
   }
 
   @Get('detail')
-  async getShortCodeVisitDetailById(@Query('id') id: string): BasicResponse<GetShortCodeVisitDetailByIdVo> {
+  async getShortCodeVisitDetailById(
+    @Query('id') id: string
+  ): BasicResponse<GetShortCodeVisitDetailByIdVo> {
     try {
       const data = await this.visitRecordService.getShortCodeVisitDetailById(+id);
       return {
@@ -139,19 +132,21 @@ export class VisitRecordController {
   }
 
   @Get('ip/:ip')
-  async getIpLocation(@Param('ip') ip: string): BasicResponse<GetIpLocationVo> {
+  async getIpLocation(
+    @Param('ip') ip: string
+  ): BasicResponse<GetIpLocationVo> {
     try {
       const data = await this.visitRecordService.getIpLocation(ip);
       return {
         data,
         code: HttpStatus.OK,
         message: 'success'
-      }
+      };
     } catch (error) {
       return {
         code: HttpStatus.INTERNAL_SERVER_ERROR,
         message: error || 'Internal error'
-      }
+      };
     }
   }
 }

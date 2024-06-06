@@ -43,7 +43,7 @@ export class ShortCodeController {
       return {
         code: HttpStatus.INTERNAL_SERVER_ERROR,
         message: 'Short code list fetched unsuccessfully'
-      }
+      };
     }
   }
 
@@ -51,7 +51,7 @@ export class ShortCodeController {
   async changeStatus(@Body() changeStatusDto: ChangeStatusDto): BasicResponse<ChangeStatusVo> {
     try {
       const { shortCode } = await this.shortCodeService.changeStatus(changeStatusDto);
-      if (!shortCode) throw new Error()
+      if (!shortCode) throw new Error();
       return {
         code: HttpStatus.OK,
         data: { shortCode },
@@ -108,16 +108,16 @@ export class ShortCodeController {
   @Post('delete')
   async deleteShortLinkById(@Body() body: DeleteShortCodeByIdDto) {
     try {
-      await this.shortCodeService.deleteShortCodeById(body)
+      await this.shortCodeService.deleteShortCodeById(body);
       return {
         code: HttpStatus.OK,
         message: 'short code delete successfully'
-      }
+      };
     } catch (error) {
       return {
         code: HttpStatus.INTERNAL_SERVER_ERROR,
         message: error
-      }
+      };
     }
   }
 }

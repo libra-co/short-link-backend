@@ -22,12 +22,8 @@ export class ShortCodeService {
   private readonly redis: Redis;
 
   async genShortLink(): Promise<ShortCode>;
-  async genShortLink(
-    options: Omit<GenerateShortLinkDto, 'url'>,
-  ): Promise<ShortCode>;
-  async genShortLink(
-    options?: Omit<GenerateShortLinkDto, 'url'>,
-  ): Promise<ShortCode> {
+  async genShortLink(options: Omit<GenerateShortLinkDto, 'url'>): Promise<ShortCode>;
+  async genShortLink(options?: Omit<GenerateShortLinkDto, 'url'>): Promise<ShortCode> {
     const shortCode = genShortCode();
     const foundCodeEntity = await this.shortCodeRepository.findOneBy({
       shortCode,
@@ -61,7 +57,7 @@ export class ShortCodeService {
         return await transactionalEntityManager.save(linkMap);
       },
     );
-    return shortCodeEntity
+    return shortCodeEntity;
   }
 
   async getShortCodeByCode(shortCode: string) {
@@ -93,20 +89,20 @@ export class ShortCodeService {
       ],
     });
 
-    if (!res) throw new Error('Find short code list failed')
-    const [data, total] = res
+    if (!res) throw new Error('Find short code list failed');
+    const [data, total] = res;
 
     return { data, total, };
   }
 
   async changeStatus({ id, shortCode, status }: ChangeStatusDto) {
     // Check if the id or short code both not provided
-    if (!id && !shortCode) throw new Error('Id or short code is required')
+    if (!id && !shortCode) throw new Error('Id or short code is required');
     // If the id is not provided, then find the short code by the short code
     const shortCodeEntity = await this.shortCodeRepository.findOne({
       where: { shortCode, id },
     });
-    if (!shortCodeEntity) throw new Error('Short code not found')
+    if (!shortCodeEntity) throw new Error('Short code not found');
     shortCodeEntity.status = status;
     return await this.shortCodeRepository.save(shortCodeEntity);
 
@@ -121,12 +117,12 @@ export class ShortCodeService {
    * 2. Add deleted id in RedisDeletedShortCodeIdList list in Redis
    */
   async deleteShortCodeById({ id }: DeleteShortCodeByIdDto) {
-    const shortCodeEntity = await this.shortCodeRepository.findOneBy({ id })
-    if (!shortCodeEntity) throw new Error('Short code not found')
+    const shortCodeEntity = await this.shortCodeRepository.findOneBy({ id });
+    if (!shortCodeEntity) throw new Error('Short code not found');
     // Mark `isDelete` field as Delete
-    shortCodeEntity.isDelete = DeleteStatus.Delete
-    await this.shortCodeRepository.save(shortCodeEntity)
+    shortCodeEntity.isDelete = DeleteStatus.Delete;
+    await this.shortCodeRepository.save(shortCodeEntity);
     // Add deleted id in RedisDeletedShortCodeIdList list in Redis
-    await this.redis.sadd(RedisDeletedShortCodeIdList, id)
+    await this.redis.sadd(RedisDeletedShortCodeIdList, id);
   }
 }
