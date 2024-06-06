@@ -5,7 +5,7 @@ import { ShortLinkMapService } from './short-link-map/short-link-map.service';
 import { VisitDateRecordController } from './visit-date-record/visit-date-record.controller';
 import { VisitDateRecordService } from './visit-date-record/visit-date-record.service';
 import * as dayjs from 'dayjs';
-import { RedisShortVisitRecordDay, RedisShortVisitRecordMonth, RedisShortVisitRecordWeek, RedisShortVisitRecordYear } from './common/consts/redis';
+import { RedisShortVisitRecordDay, RedisShortVisitRecordMonth, RedisShortVisitRecordWeek, RedisShortVisitRecordYear } from './common/const/redis';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Redis } from 'ioredis';
 import { InfluxdbService } from './influxdb/influxdb.service';

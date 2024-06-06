@@ -1,5 +1,6 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EntityManager, Repository } from 'typeorm';
+import { Redis } from 'ioredis';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { genShortCode } from 'src/utils/generate-short-code';
 import { SharePrivateStatus, ShortCodeStatus } from './short-link.type';
@@ -9,7 +10,6 @@ import { ShortCodeMap } from 'src/short-link-map/entities/link-map.entity';
 import { ChangeStatusDto, DeleteShortCodeByIdDto, ListShortCodeDto } from './dto/short-link.dto';
 import { DeleteStatus } from 'src/common/types/common.type';
 import { InjectRedis } from '@nestjs-modules/ioredis';
-import { Redis } from 'ioredis';
 import { RedisDeletedShortCodeIdList } from 'src/common/consts/redis';
 
 @Injectable()
