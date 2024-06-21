@@ -19,6 +19,7 @@ export class ScheduleService {
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async updateVisitRecordTask() {
     const res = await this.redis.zrange(RedisShortVisitRecordDay, 0, -1, 'WITHSCORES');
+    const yesterdayVisitCount = await this.redis.hget(RedisVisitStatistics, 'day');
     // Clear the daily data in redis
     await this.redis.del(RedisShortVisitRecordDay);
     await this.redis.hdel(RedisVisitStatistics, 'day');
@@ -26,6 +27,7 @@ export class ScheduleService {
     // async to mysql
     visitDailyRecordList.forEach(item => this.visitDateRecordService.updateRecordInMysql(item.shortCodeId, item.shortCode, item.dateVisitNumber));
     // async to influxDB
+    this.influxdbService.writeVisitRecord({ shortCode: 'total', shortCodeId: -1, dateVisitNumber: +yesterdayVisitCount });
     visitDailyRecordList.forEach(item => this.influxdbService.writeVisitRecord(item));
   }
 }

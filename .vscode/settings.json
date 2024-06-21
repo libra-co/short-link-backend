@@ -1,6 +1,9 @@
 {
   "cSpell.words": [
-    "typeorm"
+    "hdel",
+    "hget",
+    "typeorm",
+    "zrange"
   ],
   "editor.defaultFormatter": "dbaeumer.vscode-eslint",
   "[typescript]": {

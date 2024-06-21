@@ -137,4 +137,8 @@ export class VisitRecordService {
     record.accessFailed = UrlAccessStatusEnum.FAIL;
     return await this.entityManager.save(record);
   }
+
+  async getRecent30DaysRecordFromInfluxDb() {
+
+  }
 }

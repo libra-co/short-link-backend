@@ -11,7 +11,7 @@ import { MessageTypeEnum } from 'src/message/message.type';
 import { messageContentTemplate } from 'src/message/utils';
 import { VisitDateRecordService } from 'src/visit-date-record/visit-date-record.service';
 import { BasicResponse } from 'src/common/types/common.type';
-import { GetDashBoardDataVo, GetIpLocationVo, GetShortCodeVisitDetailByIdVo } from './vo/visit-record.vo';
+import { GetDashBoardDataVo, GetIpLocationVo, GetShortCodeCountStatisticsVo, GetShortCodeVisitDetailByIdVo } from './vo/visit-record.vo';
 
 @Controller('visit-record')
 export class VisitRecordController {
@@ -166,4 +166,23 @@ export class VisitRecordController {
       };
     }
   }
+
+  @Get('shortCodeCountStatistics')
+  async getShortCodeCountStatistics(): BasicResponse<GetShortCodeCountStatisticsVo> {
+    try {
+      const statistics = await this.shortCodeService.getAvailableLinkAndTotalCount()
+      return {
+        data: statistics,
+        code: HttpStatus.OK,
+        message: 'success',
+      };
+    } catch (error) {
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error || 'Internal error'
+      };
+    }
+  }
+
+  
 }

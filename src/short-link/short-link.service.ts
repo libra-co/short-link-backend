@@ -125,4 +125,11 @@ export class ShortCodeService {
     // Add deleted id in RedisDeletedShortCodeIdList list in Redis
     await this.redis.sadd(RedisDeletedShortCodeIdList, id);
   }
+
+  async getAvailableLinkAndTotalCount() {
+    const totalCount = await this.shortCodeRepository.count({ where: { isDelete: 0 } });
+    const availableCount = await this.shortCodeRepository.count({ where: { status: ShortCodeStatus.ENABLE, isDelete: 0 } });
+
+    return { totalCount, availableCount };
+  }
 }

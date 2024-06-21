@@ -31,3 +31,8 @@ export interface GetDashBoardDataVo {
   month: number;
   year: number;
 }
+
+export interface GetShortCodeCountStatisticsVo {
+  totalCount: number;
+  availableCount: number;
+}
