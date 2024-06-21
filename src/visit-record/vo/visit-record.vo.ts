@@ -23,5 +23,11 @@ export interface GetIpLocationVo {
 
 export interface GetShortCodeVisitDetailByIdVo {
   data: VisitRecord[],
-  total: number
+  total: number;
+}
+
+export interface GetDashBoardDataVo {
+  day: number;
+  month: number;
+  year: number;
 }

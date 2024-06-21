@@ -11,7 +11,7 @@ import { MessageTypeEnum } from 'src/message/message.type';
 import { messageContentTemplate } from 'src/message/utils';
 import { VisitDateRecordService } from 'src/visit-date-record/visit-date-record.service';
 import { BasicResponse } from 'src/common/types/common.type';
-import { GetIpLocationVo, GetShortCodeVisitDetailByIdVo } from './vo/visit-record.vo';
+import { GetDashBoardDataVo, GetIpLocationVo, GetShortCodeVisitDetailByIdVo } from './vo/visit-record.vo';
 
 @Controller('visit-record')
 export class VisitRecordController {
@@ -141,6 +141,23 @@ export class VisitRecordController {
         data,
         code: HttpStatus.OK,
         message: 'success'
+      };
+    } catch (error) {
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error || 'Internal error'
+      };
+    }
+  }
+
+  @Get('summaryStatistics')
+  async getDashBoardData(): BasicResponse<GetDashBoardDataVo> {
+    try {
+      const statics = await this.visitDateRecordService.getSummaryStatistics();
+      return {
+        data: statics,
+        code: HttpStatus.OK,
+        message: 'success',
       };
     } catch (error) {
       return {

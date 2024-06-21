@@ -5,7 +5,7 @@ import { generateMemberList } from './utils';
 import { VisitDateRecordService } from 'src/visit-date-record/visit-date-record.service';
 import { InfluxdbService } from 'src/influxdb/influxdb.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { RedisShortVisitRecordDay } from 'src/common/const/redis';
+import { RedisShortVisitRecordDay, RedisVisitStatistics } from 'src/common/const/redis';
 
 @Injectable()
 export class ScheduleService {
@@ -18,13 +18,14 @@ export class ScheduleService {
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async updateVisitRecordTask() {
-    const res = await this.redis.zrange(RedisShortVisitRecordDay, 0, -1, 'WITHSCORES')
+    const res = await this.redis.zrange(RedisShortVisitRecordDay, 0, -1, 'WITHSCORES');
     // Clear the daily data in redis
-    await this.redis.del(RedisShortVisitRecordDay)
+    await this.redis.del(RedisShortVisitRecordDay);
+    await this.redis.hdel(RedisVisitStatistics, 'day');
     const visitDailyRecordList = generateMemberList(res);
     // async to mysql
-    visitDailyRecordList.forEach(item => this.visitDateRecordService.updateRecordInMysql(item.shortCodeId, item.shortCode, item.dateVisitNumber))
+    visitDailyRecordList.forEach(item => this.visitDateRecordService.updateRecordInMysql(item.shortCodeId, item.shortCode, item.dateVisitNumber));
     // async to influxDB
-    visitDailyRecordList.forEach(item => this.influxdbService.writeVisitRecord(item))
+    visitDailyRecordList.forEach(item => this.influxdbService.writeVisitRecord(item));
   }
 }

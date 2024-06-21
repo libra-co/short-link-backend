@@ -6,7 +6,7 @@ import { generateShortCodeRecordRedisKey, getIsFirstDayOfMonth, updateRecordData
 import * as dayjs from 'dayjs';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Redis } from 'ioredis';
-import { RedisShortVisitRecordDay, RedisShortVisitRecordMonth, RedisShortVisitRecordWeek, RedisShortVisitRecordYear } from '../common/const/redis';
+import { RedisShortVisitRecordDay, RedisShortVisitRecordMonth, RedisShortVisitRecordWeek, RedisShortVisitRecordYear, RedisVisitStatistics } from '../common/const/redis';
 
 @Injectable()
 export class VisitDateRecordService {
@@ -30,23 +30,23 @@ export class VisitDateRecordService {
     const insertMonth = previousDay.month();
     let recordEntity = await this.entityManager.findOneBy(VisitDateRecord, { id: shortCodeId });
     if (!recordEntity) {
-      recordEntity = new VisitDateRecord()
-      recordEntity.shortCodeId = shortCodeId
-      recordEntity.shortCode = shortCode
-      recordEntity.recordDate = previousDay.format('YYYY-MM-DD')
+      recordEntity = new VisitDateRecord();
+      recordEntity.shortCodeId = shortCodeId;
+      recordEntity.shortCode = shortCode;
+      recordEntity.recordDate = previousDay.format('YYYY-MM-DD');
     }
 
     // Only record the data for the current year
     if (insertMonth === 11 && insertDate === 31) return;
 
     const lastDayOfMonth = previousDay.endOf('month').date();
-    console.log('lastDayOfMonth', lastDayOfMonth)
+    console.log('lastDayOfMonth', lastDayOfMonth);
     const {
       week = Array(7).fill(0),
       month = Array(lastDayOfMonth - 1).fill(0),
       year = Array(12).fill(0),
     } = recordEntity;
-    console.log('month', month, month.length)
+    console.log('month', month, month.length);
     // Update year data
     recordEntity.year = updateRecordData(year, insertMonth, dateVisitNumber);
     // Update month data
@@ -61,11 +61,11 @@ export class VisitDateRecordService {
     } else {
       recordEntity.week = updateRecordData(week, updateWeekIndex, dateVisitNumber);
     }
-    await this.entityManager.save(recordEntity)
+    await this.entityManager.save(recordEntity);
   }
 
   async recordVisitInRedis(shortCodeId: number, shortCode: string) {
-    const redisMemberKey = generateShortCodeRecordRedisKey(shortCodeId, shortCode)
+    const redisMemberKey = generateShortCodeRecordRedisKey(shortCodeId, shortCode);
     // Find data
     const findPipeline = this.redis.pipeline();
     let dayScore, weekScore, monthScore, yearScore;
@@ -80,7 +80,20 @@ export class VisitDateRecordService {
     insertPipeline.zadd(RedisShortVisitRecordWeek, weekScore + 1, redisMemberKey);
     insertPipeline.zadd(RedisShortVisitRecordMonth, monthScore + 1, redisMemberKey);
     insertPipeline.zadd(RedisShortVisitRecordYear, yearScore + 1, redisMemberKey);
+    // Update summary statistics
+    insertPipeline.hincrby(RedisVisitStatistics, 'day', 1);
+    insertPipeline.hincrby(RedisVisitStatistics, 'month', 1);
+    insertPipeline.hincrby(RedisVisitStatistics, 'year', 1);
     await insertPipeline.exec();
   }
+
+  async getSummaryStatistics() {
+    const { day, month, year } = await this.redis.hgetall(RedisVisitStatistics);
+    return {
+      day: Number(day),
+      month: Number(month),
+      year: Number(year)
+    };
+  };
 
 }
