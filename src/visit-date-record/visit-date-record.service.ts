@@ -82,17 +82,19 @@ export class VisitDateRecordService {
     insertPipeline.zadd(RedisShortVisitRecordYear, yearScore + 1, redisMemberKey);
     // Update summary statistics
     insertPipeline.hincrby(RedisVisitStatistics, 'day', 1);
+    insertPipeline.hincrby(RedisVisitStatistics, 'week', 1);
     insertPipeline.hincrby(RedisVisitStatistics, 'month', 1);
     insertPipeline.hincrby(RedisVisitStatistics, 'year', 1);
     await insertPipeline.exec();
   }
 
   async getSummaryStatistics() {
-    const { day, month, year } = await this.redis.hgetall(RedisVisitStatistics);
+    const { day, week, month, year } = await this.redis.hgetall(RedisVisitStatistics);
     return {
-      day: Number(day),
-      month: Number(month),
-      year: Number(year)
+      day: Number(day) || 0,
+      week: Number(week) || 0,
+      month: Number(month) || 0,
+      year: Number(year) || 0,
     };
   };
 

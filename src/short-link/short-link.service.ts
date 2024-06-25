@@ -10,7 +10,7 @@ import { ShortCodeMap } from 'src/short-link-map/entities/link-map.entity';
 import { ChangeStatusDto, DeleteShortCodeByIdDto, ListShortCodeDto } from './dto/short-link.dto';
 import { DeleteStatus } from 'src/common/types/common.type';
 import { InjectRedis } from '@nestjs-modules/ioredis';
-import { RedisDeletedShortCodeIdList } from 'src/common/const/redis';
+import { RedisDeletedShortCodeIdList, RedisShortVisitRecordYear } from 'src/common/const/redis';
 
 @Injectable()
 export class ShortCodeService {
@@ -131,5 +131,16 @@ export class ShortCodeService {
     const availableCount = await this.shortCodeRepository.count({ where: { status: ShortCodeStatus.ENABLE, isDelete: 0 } });
 
     return { totalCount, availableCount };
+  }
+
+  async getHotLinkByYear() {
+    const shortCodes = await this.redis.zrange(RedisShortVisitRecordYear, 0, 4, "BYSCORE");
+    const shortCodeIds = shortCodes.map(item => item.split('_')[0]);
+    const shortCode = await this.entityManager
+      .createQueryBuilder<ShortCode>(ShortCode, "shortCode")
+      .innerJoinAndSelect(ShortCodeMap, "shortCodeMap", "shortCode.id = shortCodeMap.shortCodeId")
+      .where("shortCode.id IN (:...shortCodeIds)", { shortCodeIds })
+      .getMany();
+    console.log('shortCode', shortCode);
   }
 }

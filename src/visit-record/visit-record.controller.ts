@@ -153,7 +153,9 @@ export class VisitRecordController {
   @Get('summaryStatistics')
   async getDashBoardData(): BasicResponse<GetDashBoardDataVo> {
     try {
+      console.log('123', 123);
       const statics = await this.visitDateRecordService.getSummaryStatistics();
+      console.log('456', 456);
       return {
         data: statics,
         code: HttpStatus.OK,
@@ -170,7 +172,7 @@ export class VisitRecordController {
   @Get('shortCodeCountStatistics')
   async getShortCodeCountStatistics(): BasicResponse<GetShortCodeCountStatisticsVo> {
     try {
-      const statistics = await this.shortCodeService.getAvailableLinkAndTotalCount()
+      const statistics = await this.shortCodeService.getAvailableLinkAndTotalCount();
       return {
         data: statistics,
         code: HttpStatus.OK,
@@ -184,5 +186,5 @@ export class VisitRecordController {
     }
   }
 
-  
+
 }

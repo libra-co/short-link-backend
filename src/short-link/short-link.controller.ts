@@ -120,4 +120,13 @@ export class ShortCodeController {
       };
     }
   }
+
+  @Get('getHotLinkByYear')
+  async getHotLinkByYear() {
+    try {
+      const shortCodes = await this.shortCodeService.getHotLinkByYear();
+    } catch (error) {
+
+    }
+  }
 }
