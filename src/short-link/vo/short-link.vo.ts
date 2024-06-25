@@ -1,10 +1,19 @@
 import { ShortCode } from '../entities/short-link.entity';
+import { SharePrivateStatus, ShortCodeStatus } from '../short-link.type';
 
 export interface ListShortCodeVo {
   data: ShortCode[],
-  total: number
+  total: number;
 }
 
 export interface ChangeStatusVo {
-  shortCode: string
+  shortCode: string;
+}
+
+export interface GetHotLinkByYearVo extends ShortCode {
+  id: number;
+  shortCode: string;
+  status: ShortCodeStatus;
+  privateShare: SharePrivateStatus;
+  note: string;
 }

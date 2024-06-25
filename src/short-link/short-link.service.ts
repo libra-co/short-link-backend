@@ -135,12 +135,13 @@ export class ShortCodeService {
 
   async getHotLinkByYear() {
     const shortCodes = await this.redis.zrange(RedisShortVisitRecordYear, 0, 4, "BYSCORE");
-    const shortCodeIds = shortCodes.map(item => item.split('_')[0]);
-    const shortCode = await this.entityManager
+    const shortCodeIds = shortCodes.map(item => +item.split('_')[0]);
+    const shortCodeEntities = await this.entityManager
       .createQueryBuilder<ShortCode>(ShortCode, "shortCode")
-      .innerJoinAndSelect(ShortCodeMap, "shortCodeMap", "shortCode.id = shortCodeMap.shortCodeId")
+      .select(['shortCode.id', 'shortCode.shortCode', 'shortCode.note', 'shortCode.privateShare','shortCode.status']) // here must use `alias.field` to query
       .where("shortCode.id IN (:...shortCodeIds)", { shortCodeIds })
+      .andWhere('shortCode.isDelete = :isDelete', { isDelete: DeleteStatus.Active })
       .getMany();
-    console.log('shortCode', shortCode);
+    return shortCodeEntities;
   }
 }

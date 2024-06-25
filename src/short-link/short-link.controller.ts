@@ -5,7 +5,7 @@ import { GenerateShortLinkDto } from 'src/short-link-map/dtos/generate-short-lin
 import { AddShortLinkDto, ChangeStatusDto, DeleteShortCodeByIdDto, ListShortCodeDto } from './dto/short-link.dto';
 import { SharePrivateStatus, ShortCodeStatus } from './short-link.type';
 import { BasicResponse } from 'src/common/types/common.type';
-import { ChangeStatusVo, ListShortCodeVo } from './vo/short-link.vo';
+import { ChangeStatusVo, GetHotLinkByYearVo, ListShortCodeVo } from './vo/short-link.vo';
 
 @Controller('short-code')
 export class ShortCodeController {
@@ -122,11 +122,19 @@ export class ShortCodeController {
   }
 
   @Get('getHotLinkByYear')
-  async getHotLinkByYear() {
+  async getHotLinkByYear(): BasicResponse<GetHotLinkByYearVo> {
     try {
-      const shortCodes = await this.shortCodeService.getHotLinkByYear();
+      const shortCodeEntities = await this.shortCodeService.getHotLinkByYear();
+      return {
+        data: shortCodeEntities,
+        code: HttpStatus.OK,
+        message: 'success'
+      };
     } catch (error) {
-
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error || 'Failed to query hot short code',
+      };
     }
   }
 }
