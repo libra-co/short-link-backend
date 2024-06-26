@@ -40,8 +40,6 @@ export class MessageService {
 
 
   async createMessage(createMessageDto: Message) {
-    console.log('123', 123);
-    console.log('createMessageDto', createMessageDto);
     return await this.entityManager.save(Message, createMessageDto);
   }
 }

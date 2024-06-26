@@ -122,7 +122,7 @@ export class ShortCodeController {
   }
 
   @Get('getHotLinkByYear')
-  async getHotLinkByYear(): BasicResponse<GetHotLinkByYearVo> {
+  async getHotLinkByYear(): BasicResponse<GetHotLinkByYearVo[]> {
     try {
       const shortCodeEntities = await this.shortCodeService.getHotLinkByYear();
       return {

@@ -10,7 +10,7 @@ export interface ChangeStatusVo {
   shortCode: string;
 }
 
-export interface GetHotLinkByYearVo extends ShortCode {
+export interface GetHotLinkByYearVo {
   id: number;
   shortCode: string;
   status: ShortCodeStatus;
