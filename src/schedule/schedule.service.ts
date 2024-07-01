@@ -45,7 +45,6 @@ export class ScheduleService {
     // async to mysql
     visitDailyRecordList.forEach(item => this.visitDateRecordService.updateRecordInMysql(item.shortCodeId, item.shortCode, item.dateVisitNumber));
     // async to influxDB
-    this.influxdbService.writeVisitRecord({ shortCode: 'total', shortCodeId: -1, dateVisitNumber: +yesterdayVisitCount });
     visitDailyRecordList.forEach(item => this.influxdbService.writeVisitRecord(item));
   }
 }

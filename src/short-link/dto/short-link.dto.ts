@@ -21,3 +21,4 @@ export interface ChangeStatusDto {
 export interface DeleteShortCodeByIdDto {
   id: number
 }
+
