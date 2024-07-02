@@ -3,7 +3,9 @@ import { SharePrivateStatus, ShortCodeStatus } from '../short-link.type';
 
 export interface AddShortLinkDto {
   url: string,
-  note?: string,
+  note: string,
+  isPrivate: boolean,
+  visitLimit: number;
 }
 
 export interface ListShortCodeDto extends PaginationInterface {
@@ -19,6 +21,6 @@ export interface ChangeStatusDto {
 }
 
 export interface DeleteShortCodeByIdDto {
-  id: number
+  id: number;
 }
 

@@ -50,8 +50,6 @@ export class InfluxdbService {
       |> aggregateWindow(every: 1d, fn: sum)
       `;
 
-    console.log('fluxQuery', fluxQuery);
-
     return new Promise((resolve, reject) => {
       const result = [];
 
@@ -59,12 +57,8 @@ export class InfluxdbService {
         next: (row, tableMeta) => {
           const tableObject = tableMeta.toObject(row);
           const { _time, _value, shortCodeId } = tableObject;
-          const chinaTime = dayjs.utc(_time).tz('Asia/Shanghai').format('YYYY-MM-DD');
-          const dateData = {
-            value: _value || 0,
-            time: chinaTime,
-            shortCodeId
-          };
+          const time = dayjs.utc(_time).tz('Asia/Shanghai').format('YYYY-MM-DD');
+          const dateData = { time, shortCodeId, value: _value || 0 };
           result.push(dateData);
         },
         error: (error) => {

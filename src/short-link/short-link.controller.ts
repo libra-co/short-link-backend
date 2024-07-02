@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Inject, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Inject, Next, Post, Query, Req, Res } from '@nestjs/common';
 import { ShortCodeService } from './short-link.service';
 import { ShortLinkMapService } from 'src/short-link-map/short-link-map.service';
 import { GenerateShortLinkDto } from 'src/short-link-map/dtos/generate-short-link.dto';
@@ -6,6 +6,7 @@ import { AddShortLinkDto, ChangeStatusDto, DeleteShortCodeByIdDto, ListShortCode
 import { SharePrivateStatus, ShortCodeStatus } from './short-link.type';
 import { BasicResponse } from 'src/common/types/common.type';
 import { ChangeStatusVo, GetHotLinkByYearVo, ListShortCodeVo } from './vo/short-link.vo';
+import { NextFunction, Request, Response } from 'express';
 
 @Controller('short-code')
 export class ShortCodeController {
@@ -66,16 +67,26 @@ export class ShortCodeController {
   }
 
   @Post()
-  async genShortLink(@Body() body: AddShortLinkDto): BasicResponse {
-    const { url, note } = body;
+  async genShortLink(@Body() body: AddShortLinkDto, @Next() next: NextFunction, @Res({ passthrough: true }) res: Response): BasicResponse {
+    const { url, note, isPrivate, visitLimit } = body;
+    // Go create private short code
+    if (isPrivate) {
+      next();
+      return;
+    };
     try {
-      const shortCode = await this.shortCodeService.genShortLink({ note });
+      console.log('123', 123);
+      const shortCode = await this.shortCodeService.genShortLink({ note, visitLimit });
+      console.log('234', 234);
       const linkMap = this.shortLinkMapService.mapShortLink(shortCode, url);
+      console.log('345', 345);
       await this.shortCodeService.createShortLink(shortCode, linkMap);
+      console.log('567', 567);
       return {
         code: HttpStatus.OK,
         message: 'Short link create successfully',
       };
+      console.log('8888', 8888);
     } catch (error) {
       return {
         code: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -88,6 +99,7 @@ export class ShortCodeController {
   async genPrivateShortLink(
     @Body() genPrivateShortLinkDto: GenerateShortLinkDto,
   ): BasicResponse {
+    console.log('789789', 789789);
     try {
       const { url, ...options } = genPrivateShortLinkDto;
       const shortCode = await this.shortCodeService.genShortLink(options);

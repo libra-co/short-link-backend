@@ -128,16 +128,14 @@ export class ShortCodeService {
 
   async getAvailableLinkAndTotalCount() {
     const totalCount = await this.shortCodeRepository.count({ where: { isDelete: 0 } });
-    const availableCount = await this.shortCodeRepository.count({ where: { status: ShortCodeStatus.ENABLE, isDelete: 0 } });
+    const availableCount = await this.shortCodeRepository.count({ where: { status: ShortCodeStatus.ENABLE, isDelete: 0, } });
 
     return { totalCount, availableCount };
   }
 
   async getHotLinkByYear() {
     const shortCodes = await this.redis.zrevrange(RedisShortVisitRecordYear, 0, 4, "WITHSCORES");
-    console.log('shortCodes', shortCodes);
     const shortCodeIds = shortCodes.map(item => +item.split('_')[0]);
-    console.log('shortCodeIds', shortCodeIds);
     const shortCodeEntities = await this.entityManager
       .createQueryBuilder<ShortCode>(ShortCode, "shortCode")
       .select(['shortCode.id', 'shortCode.shortCode', 'shortCode.note', 'shortCode.privateShare', 'shortCode.status']) // here must use `alias.field` to query
